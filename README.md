@@ -1,6 +1,6 @@
 # tablarian
 
-
+[![Build Status](https://travis-ci.org/pinzolo/bqn.png)](http://travis-ci.org/pinzolo/bqn)
 
 ## Description
 
