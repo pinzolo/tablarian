@@ -1,5 +1,12 @@
 package main
 
+import (
+	"fmt"
+)
+
+// Version is tablarian current version.
+var Version = "0.0.1"
+
 var cmdVersion = &Command{
 	Run:       runVersion,
 	UsageLine: "version ",
@@ -16,6 +23,6 @@ func init() {
 
 // runVersion executes version command and return exit code.
 func runVersion(args []string) int {
-
+	fmt.Println("tablarian:", Version)
 	return 0
 }
