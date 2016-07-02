@@ -1,7 +1,6 @@
 package main
 
-import "testing"
-
-func TestCmdVersion(t *testing.T) {
-	// Write your code here
+func ExampleCmdVersion() {
+	cmdVersion.Run(make([]string, 0, 0))
+	// Output: tablarian: 0.0.1
 }
