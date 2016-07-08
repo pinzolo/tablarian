@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"io"
@@ -45,11 +45,14 @@ func TestLoadDefaultConfig(t *testing.T) {
 	if cfg.Schema != "foo" {
 		t.Errorf("Failure schema config loading. 'test' is expected but actual is %s", cfg.Schema)
 	}
+	if cfg.Options["sslmode"] != "disable" {
+		t.Errorf("Failure options config loading. 'sslmode: disabled' is expected but actual is %#v", cfg.Options)
+	}
 }
 
 func TestLoadOtherConfig(t *testing.T) {
 	setupTestConfigFile("tablarian-other")
-	cfg, err := LoadConfig("test/tablarian-test.config")
+	cfg, err := LoadConfig("../test/tablarian-test.config")
 	if err != nil {
 		t.Errorf("Failure config loading: %v", err)
 	}
@@ -76,6 +79,9 @@ func TestLoadOtherConfig(t *testing.T) {
 	}
 	if cfg.Schema != "foo" {
 		t.Errorf("Failure schema config loading. 'test' is expected but actual is %s", cfg.Schema)
+	}
+	if cfg.Options["sslmode"] != "disable" {
+		t.Errorf("Failure options config loading. 'sslmode: disabled' is expected but actual is %#v", cfg.Options)
 	}
 }
 
@@ -110,6 +116,9 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 	if cfg.Schema != "foo" {
 		t.Errorf("Failure schema config loading. 'test' is expected but actual is %s", cfg.Schema)
 	}
+	if cfg.Options["sslmode"] != "disable" {
+		t.Errorf("Failure options config loading. 'sslmode: disabled' is expected but actual is %#v", cfg.Options)
+	}
 }
 
 func setupTestConfigFile(fileName string) error {
@@ -117,7 +126,7 @@ func setupTestConfigFile(fileName string) error {
 	if err != nil {
 		return err
 	}
-	src, err := os.Open(filepath.Join(wd, "test", fileName+".config"))
+	src, err := os.Open(filepath.Join(wd, "..", "test", fileName+".config"))
 	if err != nil {
 		return err
 	}
