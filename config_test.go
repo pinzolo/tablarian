@@ -30,6 +30,9 @@ func TestLoadDefaultConfig(t *testing.T) {
 	if cfg.Host != "localhost" {
 		t.Errorf("Failure host config loading. 'localhost' is expected but actual is %s", cfg.Host)
 	}
+	if cfg.Port != 5432 {
+		t.Errorf("Failure port config loading. 5432 is expected but actual is %v", cfg.Port)
+	}
 	if cfg.User != "postgres" {
 		t.Errorf("Failure user config loading. 'postgres' is expected but actual is %s", cfg.User)
 	}
@@ -58,6 +61,9 @@ func TestLoadOtherConfig(t *testing.T) {
 	}
 	if cfg.Host != "localhost" {
 		t.Errorf("Failure host config loading. 'localhost' is expected but actual is %s", cfg.Host)
+	}
+	if cfg.Port != 5432 {
+		t.Errorf("Failure port config loading. 5432 is expected but actual is %v", cfg.Port)
 	}
 	if cfg.User != "postgres" {
 		t.Errorf("Failure user config loading. 'postgres' is expected but actual is %s", cfg.User)
@@ -88,6 +94,9 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 	}
 	if cfg.Host != "localhost" {
 		t.Errorf("Failure host config loading. 'localhost' is expected but actual is %s", cfg.Host)
+	}
+	if cfg.Port != 5432 {
+		t.Errorf("Failure port config loading. 5432 is expected but actual is %v", cfg.Port)
 	}
 	if cfg.User != "postgres" {
 		t.Errorf("Failure user config loading. 'postgres' is expected but actual is %s", cfg.User)
