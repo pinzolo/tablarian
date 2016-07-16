@@ -2,6 +2,7 @@ package converter
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/pinzolo/dbmodel"
 )
@@ -26,7 +27,12 @@ func (p postgres) Convert(c *dbmodel.Column) []string {
 	if c.IsNullable() {
 		null = ""
 	}
+	var pkPosition string
+	if c.PrimaryKeyPosition() > 0 {
+		pkPosition = strconv.FormatInt(c.PrimaryKeyPosition(), 10)
+	}
 	return []string{
+		pkPosition,
 		c.Name(),
 		c.DataType(),
 		c.Size().String(),

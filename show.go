@@ -59,8 +59,9 @@ func printColumns(cols []*dbmodel.Column, cfg *Config) error {
 		return err
 	}
 	w := tablewriter.NewWriter(os.Stdout)
-	w.SetHeader([]string{"NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
+	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	w.SetBorder(false)
+	w.SetAutoWrapText(false)
 	for _, col := range cols {
 		w.Append(conv.Convert(col))
 	}
