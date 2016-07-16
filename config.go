@@ -41,7 +41,7 @@ func loadConfig(path string) (*Config, error) {
 	return cfg, nil
 }
 
-func clientFor(c *Config) *dbmodel.Client {
+func dbClientFor(c *Config) *dbmodel.Client {
 	ds := dbmodel.NewDataSource(c.Host, c.Port, c.User, c.Password, c.Database, c.Options)
 	return dbmodel.NewClient(c.Driver, ds)
 }

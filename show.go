@@ -32,11 +32,11 @@ func runShow(args []string) int {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
 	}
-	client := clientFor(cfg)
-	client.Connect()
-	defer client.Disconnect()
+	db := dbClientFor(cfg)
+	db.Connect()
+	defer db.Disconnect()
 
-	tbl, err := client.Table(cfg.Schema, args[0])
+	tbl, err := db.Table(cfg.Schema, args[0])
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
