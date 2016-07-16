@@ -7,8 +7,6 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/pinzolo/dbmodel"
 	"github.com/pinzolo/tablarian/converter"
-
-	_ "github.com/lib/pq"
 )
 
 var (

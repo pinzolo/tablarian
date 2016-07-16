@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"text/template"
+
+	_ "github.com/lib/pq"
 )
 
 // A Command is an implementation of a tablarian command
