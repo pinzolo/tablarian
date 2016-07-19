@@ -115,6 +115,7 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 }
 
 func setupTestConfigFile(fileName string) error {
+	deleteTestConfigFile()
 	wd, err := os.Getwd()
 	if err != nil {
 		return err

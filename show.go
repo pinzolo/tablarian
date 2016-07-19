@@ -18,16 +18,17 @@ var (
 
 	`,
 	}
+	configFile string
 )
 
 func init() {
-	// Set your flag here like below.
-	// cmdShow.Flag.BoolVar(&flagA, "a", false, "")
+	cmdShow.Flag.StringVar(&configFile, "config", "tablarian.config", "Config file path")
+	cmdShow.Flag.StringVar(&configFile, "c", "tablarian.config", "Config file path")
 }
 
 // runShow executes show command and return exit code.
 func runShow(args []string) int {
-	cfg, err := loadConfig("tablarian.config")
+	cfg, err := loadConfig(configFile)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 1
