@@ -12,10 +12,14 @@ import (
 var (
 	cmdShow = &Command{
 		Run:       runShow,
-		UsageLine: "show ",
+		UsageLine: "show [-c] table_name",
 		Short:     "Print a table definition.(Console only)",
-		Long: `
+		Long: `Print table definition to console.
 
+Options:
+    -c 'config gile', --config 'config file'
+        use config file instead of default config file(tablarian.config)
+        if 'config file' starts with '@', it is treated as absolute file path.
 	`,
 	}
 	configFile string
