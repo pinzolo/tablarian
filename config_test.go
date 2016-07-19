@@ -8,13 +8,6 @@ import (
 	"testing"
 )
 
-func TestMain(m *testing.M) {
-	deleteTestConfigFile()
-	code := m.Run()
-	defer os.Exit(code)
-	deleteTestConfigFile()
-}
-
 func TestLoadDefaultConfig(t *testing.T) {
 	setupTestConfigFile("tablarian-test")
 	cfg, err := loadConfig("tablarian.config")
