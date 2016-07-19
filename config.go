@@ -6,21 +6,24 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/pinzolo/dbmodel"
 )
 
 // Config stores loaded config file content
 type Config struct {
-	FilePath string `json:"-"`
-	Driver   string `json:"driver"`
-	Host     string `json:"host"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	Database string `json:"database"`
-	Schema   string `json:"schema"`
+	FilePath string            `json:"-"`
+	Driver   string            `json:"driver"`
+	Host     string            `json:"host"`
+	Port     int               `json:"port"`
+	User     string            `json:"user"`
+	Password string            `json:"password"`
+	Database string            `json:"database"`
+	Schema   string            `json:"schema"`
+	Options  map[string]string `json:"options"`
 }
 
-// LoadConfig returns loaded config file content as *Config
-func LoadConfig(path string) (*Config, error) {
+func loadConfig(path string) (*Config, error) {
 	rpath, err := resolvePath(path)
 	if err != nil {
 		return nil, err
@@ -36,6 +39,11 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+func dbClientFor(c *Config) *dbmodel.Client {
+	ds := dbmodel.NewDataSource(c.Host, c.Port, c.User, c.Password, c.Database, c.Options)
+	return dbmodel.NewClient(c.Driver, ds)
 }
 
 func resolvePath(path string) (string, error) {
