@@ -13,7 +13,7 @@ var cmdIndex = &Command{
 	Run:       runIndex,
 	UsageLine: "index ",
 	Short:     "Enumerate all table names in schema.",
-	Long: `Enumerate table names.
+	Long: `Enumerate table names in schema.
 
 Options:
     -c 'config gile', --config 'config file'
