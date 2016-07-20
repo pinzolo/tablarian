@@ -22,7 +22,7 @@ func Example_cmdIndex_with_other_config() {
 	// currency
 }
 
-func Example_cmdIndex_with_other_config_on_AbsPath() {
+func Example_cmdIndex_with_other_config_on_absolute_file_path() {
 	setupTestConfigFile("tablarian-aw")
 	absPath, err := testConfigFilePath()
 	if err != nil {

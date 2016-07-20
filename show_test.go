@@ -36,7 +36,7 @@ func Example_cmdShow_with_other_config() {
 	// +----+---------------+-------------+------+------+---------+--------------------------------+
 }
 
-func Example_cmdShow_with_other_config_on_AbsPath() {
+func Example_cmdShow_with_other_config_on_absolute_file_path() {
 	setupTestConfigFile("tablarian-aw")
 	absPath, err := testConfigFilePath()
 	if err != nil {
