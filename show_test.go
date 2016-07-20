@@ -20,7 +20,7 @@ func Example_cmdShow() {
 	// +----+---------------+-------------+------+------+---------+--------------------------------+
 }
 
-func Example_cmdShowWithOtherConfig() {
+func Example_cmdShow_with_other_config() {
 	setupTestConfigFile("tablarian-test")
 	configFile = "test/tablarian-aw.config"
 	args := []string{"currency"}
@@ -36,7 +36,7 @@ func Example_cmdShowWithOtherConfig() {
 	// +----+---------------+-------------+------+------+---------+--------------------------------+
 }
 
-func Example_cmdShowWithOtherConfigOnAbsPath() {
+func Example_cmdShow_with_other_config_on_AbsPath() {
 	setupTestConfigFile("tablarian-aw")
 	absPath, err := testConfigFilePath()
 	if err != nil {
