@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/pinzolo/dbmodel"
 )
 
@@ -10,14 +13,25 @@ var cmdIndex = &Command{
 	Run:       runIndex,
 	UsageLine: "index ",
 	Short:     "Enumerate all table names in schema.",
-	Long: `
+	Long: `Enumerate table names.
 
+Options:
+    -c 'config gile', --config 'config file'
+        use config file instead of default config file(tablarian.config)
+        if 'config file' starts with '@', it is treated as absolute file path.
+
+    -C, --no-comment
+	    Not print table comment. (default: false)
 	`,
 }
+
+var withoutTableComment = false
 
 func init() {
 	cmdIndex.Flag.StringVar(&configFile, "config", "tablarian.config", "Config file path")
 	cmdIndex.Flag.StringVar(&configFile, "c", "tablarian.config", "Config file path")
+	cmdIndex.Flag.BoolVar(&withoutTableComment, "no-comment", false, "Without table comment")
+	cmdIndex.Flag.BoolVar(&withoutTableComment, "C", false, "Without table comment")
 }
 
 // runIndex executes index command and return exit code.
@@ -37,12 +51,38 @@ func runIndex(args []string) int {
 		return 1
 	}
 
-	printTableNames(tables, cfg)
+	printTableNames(tables)
 	return 0
 }
 
-func printTableNames(tables []*dbmodel.Table, cfg *Config) {
-	for _, tbl := range tables {
-		fmt.Fprintln(o.out, tbl.Name())
+func printTableNames(tables []*dbmodel.Table) {
+	for _, line := range tableNamesLines(tables) {
+		fmt.Fprintln(o.out, line)
 	}
+}
+
+func tableNamesLines(tables []*dbmodel.Table) []string {
+	buf := &bytes.Buffer{}
+	w := tablewriter.NewWriter(buf)
+	w.SetBorder(false)
+	w.SetColumnSeparator("")
+	w.SetAutoWrapText(false)
+	for _, tbl := range tables {
+		data := []string{tbl.Name()}
+		if !withoutTableComment {
+			data = append(data, tbl.Comment())
+		}
+		w.Append(data)
+	}
+	w.Render()
+	return trimEachLines(buf.String())
+}
+
+func trimEachLines(tableString string) []string {
+	lines := strings.Split(tableString, "\n")
+	newLines := make([]string, 0, len(lines))
+	for _, line := range lines {
+		newLines = append(newLines, strings.TrimSpace(line))
+	}
+	return newLines
 }
