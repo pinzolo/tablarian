@@ -56,6 +56,7 @@ var commands = []*Command{
 	cmdVersion,
 	cmdShow,
 	cmdOut,
+	cmdIndex,
 }
 
 func main() {
@@ -89,7 +90,7 @@ func main() {
 	os.Exit(2)
 }
 
-var usageTemplate = `tablarian is a tool for
+var usageTemplate = `tablarian is librarian for tables.
 
 Usage:
 
