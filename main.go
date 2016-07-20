@@ -33,6 +33,13 @@ type Command struct {
 	Flag flag.FlagSet
 }
 
+type out struct {
+	out io.Writer
+	err io.Writer
+}
+
+var o = &out{out: os.Stdout, err: os.Stderr}
+
 // Name returns the command's name: the first word in the usage line.
 func (c *Command) Name() string {
 	name := c.UsageLine
@@ -45,8 +52,8 @@ func (c *Command) Name() string {
 
 // Usage prints usage.
 func (c *Command) Usage() {
-	fmt.Fprintf(os.Stderr, "usage: %s\n\n", c.UsageLine)
-	fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(c.Long))
+	fmt.Fprintf(o.err, "usage: %s\n\n", c.UsageLine)
+	fmt.Fprintf(o.err, "%s\n", strings.TrimSpace(c.Long))
 	os.Exit(2)
 }
 
@@ -86,7 +93,7 @@ func main() {
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "tablarian: unknown subcommand %q\nRun ' tablarian help' for usage.\n", args[0])
+	fmt.Fprintf(o.err, "tablarian: unknown subcommand %q\nRun ' tablarian help' for usage.\n", args[0])
 	os.Exit(2)
 }
 
@@ -126,19 +133,19 @@ func printUsage(w io.Writer) {
 }
 
 func usage() {
-	printUsage(os.Stderr)
+	printUsage(o.err)
 	os.Exit(2)
 }
 
 // help implements the 'help' command.
 func help(args []string) {
 	if len(args) == 0 {
-		printUsage(os.Stdout)
+		printUsage(o.out)
 		// not exit 2: succeeded at 'tablarian help'.
 		return
 	}
 	if len(args) != 1 {
-		fmt.Fprintf(os.Stderr, "usage: tablarian help command\n\nToo many arguments given.\n")
+		fmt.Fprintf(o.err, "usage: tablarian help command\n\nToo many arguments given.\n")
 		os.Exit(2) // failed at 'tablarian help'
 	}
 
@@ -146,12 +153,12 @@ func help(args []string) {
 
 	for _, cmd := range commands {
 		if cmd.Name() == arg {
-			tmpl(os.Stdout, helpTemplate, cmd)
+			tmpl(o.out, helpTemplate, cmd)
 			// not exit 2: succeeded at 'tablarian help cmd'.
 			return
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Unknown help topic %#q.  Run 'tablarian help'.\n", arg)
+	fmt.Fprintf(o.err, "Unknown help topic %#q.  Run 'tablarian help'.\n", arg)
 	os.Exit(2) // failed at 'tablarian help cmd'
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/pinzolo/dbmodel"
 )
@@ -25,7 +24,7 @@ func init() {
 func runIndex(args []string) int {
 	cfg, err := loadConfig(configFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(o.err, err)
 		return 1
 	}
 	db := dbClientFor(cfg)
@@ -34,7 +33,7 @@ func runIndex(args []string) int {
 
 	tables, err := db.AllTableNames(cfg.Schema)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(o.err, err)
 		return 1
 	}
 
@@ -44,6 +43,6 @@ func runIndex(args []string) int {
 
 func printTableNames(tables []*dbmodel.Table, cfg *Config) {
 	for _, tbl := range tables {
-		fmt.Println(tbl.Name())
+		fmt.Fprintln(o.out, tbl.Name())
 	}
 }
