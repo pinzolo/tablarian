@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pinzolo/dbmodel"
@@ -34,7 +33,7 @@ func init() {
 func runShow(args []string) int {
 	cfg, err := loadConfig(configFile)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(o.err, err)
 		return 1
 	}
 	db := dbClientFor(cfg)
@@ -43,13 +42,13 @@ func runShow(args []string) int {
 
 	tbl, err := db.Table(cfg.Schema, args[0])
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(o.err, err)
 		return 1
 	}
 
 	err = printColumns(tbl.Columns(), cfg)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(o.err, err)
 		return 1
 	}
 
@@ -61,7 +60,7 @@ func printColumns(cols []*dbmodel.Column, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	w := tablewriter.NewWriter(os.Stdout)
+	w := tablewriter.NewWriter(o.out)
 	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	w.SetAutoWrapText(false)
 	for _, col := range cols {

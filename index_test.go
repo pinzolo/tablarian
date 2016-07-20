@@ -1,28 +1,45 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"strings"
+	"testing"
 )
 
-func Example_cmdIndex() {
+func TestCmdIndex(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.out = buf
 	setupTestConfigFile("tablarian-aw")
 	cmdIndex.Run([]string{})
-	// Output:
-	// country_region_currency
-	// currency
+	expected := `
+country_region_currency
+currency`
+	actual := buf.String()
+	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
+		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
+	}
 }
 
-func Example_cmdIndex_with_other_config() {
+func TestCmdIndexWithOtherConfig(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.out = buf
 	setupTestConfigFile("tablarian-test")
 	configFile = "test/tablarian-aw.config"
 	cmdIndex.Run([]string{})
-	// Output:
-	// country_region_currency
-	// currency
+	expected := `
+country_region_currency
+currency`
+	actual := buf.String()
+	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
+		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
+	}
 }
 
-func Example_cmdIndex_with_other_config_on_absolute_file_path() {
+func TestCmdIndexWithOtherConfigByAbsPath(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.out = buf
 	setupTestConfigFile("tablarian-aw")
 	absPath, err := testConfigFilePath()
 	if err != nil {
@@ -30,7 +47,11 @@ func Example_cmdIndex_with_other_config_on_absolute_file_path() {
 	}
 	configFile = "@" + absPath
 	cmdIndex.Run([]string{})
-	// Output:
-	// country_region_currency
-	// currency
+	expected := `
+country_region_currency
+currency`
+	actual := buf.String()
+	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
+		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
+	}
 }
