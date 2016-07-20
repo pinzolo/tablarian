@@ -82,7 +82,9 @@ func trimEachLines(tableString string) []string {
 	lines := strings.Split(tableString, "\n")
 	newLines := make([]string, 0, len(lines))
 	for _, line := range lines {
-		newLines = append(newLines, strings.TrimSpace(line))
+		if l := strings.TrimSpace(line); len(l) > 0 {
+			newLines = append(newLines, l)
+		}
 	}
 	return newLines
 }
