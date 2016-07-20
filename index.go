@@ -21,7 +21,7 @@ Options:
         if 'config file' starts with '@', it is treated as absolute file path.
 
     -C, --no-comment
-	    Not print table comment. (default: false)
+        Not print table comment. (default: false)
 	`,
 }
 
