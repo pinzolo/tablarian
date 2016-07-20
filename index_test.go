@@ -15,7 +15,7 @@ func TestCmdIndex(t *testing.T) {
 	cmdIndex.Run([]string{})
 	expected := `
 country_region_currency
-currency`
+currency                 Lookup table containing standard ISO currencies.`
 	actual := buf.String()
 	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
 		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
@@ -30,7 +30,7 @@ func TestCmdIndexWithOtherConfig(t *testing.T) {
 	cmdIndex.Run([]string{})
 	expected := `
 country_region_currency
-currency`
+currency                 Lookup table containing standard ISO currencies.`
 	actual := buf.String()
 	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
 		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
@@ -46,6 +46,21 @@ func TestCmdIndexWithOtherConfigByAbsPath(t *testing.T) {
 		fmt.Fprintf(os.Stderr, "Failure config loading: %v", err)
 	}
 	configFile = "@" + absPath
+	cmdIndex.Run([]string{})
+	expected := `
+country_region_currency
+currency                 Lookup table containing standard ISO currencies.`
+	actual := buf.String()
+	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
+		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
+	}
+}
+
+func TestCmdIndexWithNoCommentOption(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.out = buf
+	setupTestConfigFile("tablarian-aw")
+	withoutTableComment = true
 	cmdIndex.Run([]string{})
 	expected := `
 country_region_currency
