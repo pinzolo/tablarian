@@ -14,18 +14,16 @@ func TestCmdShow(t *testing.T) {
 	setupTestConfigFile("tablarian-aw")
 	args := []string{"currency"}
 	cmdShow.Run(args)
-	expected := `
+	expected := strings.TrimSpace(`
 +----+---------------+-------------+------+------+---------+--------------------------------+
 | PK |     NAME      |    TYPE     | SIZE | NULL | DEFAULT |            COMMENT             |
 +----+---------------+-------------+------+------+---------+--------------------------------+
-|  1 | currency_code | bpchar      |    3 | NO   |         | The ISO code for the currency. |
-|    | name          | public.Name |   50 | NO   |         |                                |
-|    | memo          | text        |      |      |         |                                |
+|  1 | currency_code | bpchar      |    3 | NO   |         | The ISO code for the Currency. |
+|    | name          | public.Name |   50 | NO   |         | Currency name.                 |
 |    | modified_date | timestamp   |    6 | NO   | now()   |                                |
-+----+---------------+-------------+------+------+---------+--------------------------------+`
-	actual := buf.String()
-	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
-		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
++----+---------------+-------------+------+------+---------+--------------------------------+`)
+	if actual := strings.TrimSpace(buf.String()); expected != actual {
+		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
 	}
 }
 
@@ -36,18 +34,16 @@ func TestCmdShowWithOtherConfig(t *testing.T) {
 	configFile = "test/tablarian-aw.config"
 	args := []string{"currency"}
 	cmdShow.Run(args)
-	expected := `
+	expected := strings.TrimSpace(`
 +----+---------------+-------------+------+------+---------+--------------------------------+
 | PK |     NAME      |    TYPE     | SIZE | NULL | DEFAULT |            COMMENT             |
 +----+---------------+-------------+------+------+---------+--------------------------------+
-|  1 | currency_code | bpchar      |    3 | NO   |         | The ISO code for the currency. |
-|    | name          | public.Name |   50 | NO   |         |                                |
-|    | memo          | text        |      |      |         |                                |
+|  1 | currency_code | bpchar      |    3 | NO   |         | The ISO code for the Currency. |
+|    | name          | public.Name |   50 | NO   |         | Currency name.                 |
 |    | modified_date | timestamp   |    6 | NO   | now()   |                                |
-+----+---------------+-------------+------+------+---------+--------------------------------+`
-	actual := buf.String()
-	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
-		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
++----+---------------+-------------+------+------+---------+--------------------------------+`)
+	if actual := strings.TrimSpace(buf.String()); expected != actual {
+		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
 	}
 }
 
@@ -62,17 +58,15 @@ func TestCmdShowWithOtherConfigByAbsPath(t *testing.T) {
 	configFile = "@" + absPath
 	args := []string{"currency"}
 	cmdShow.Run(args)
-	expected := `
+	expected := strings.TrimSpace(`
 +----+---------------+-------------+------+------+---------+--------------------------------+
 | PK |     NAME      |    TYPE     | SIZE | NULL | DEFAULT |            COMMENT             |
 +----+---------------+-------------+------+------+---------+--------------------------------+
-|  1 | currency_code | bpchar      |    3 | NO   |         | The ISO code for the currency. |
-|    | name          | public.Name |   50 | NO   |         |                                |
-|    | memo          | text        |      |      |         |                                |
+|  1 | currency_code | bpchar      |    3 | NO   |         | The ISO code for the Currency. |
+|    | name          | public.Name |   50 | NO   |         | Currency name.                 |
 |    | modified_date | timestamp   |    6 | NO   | now()   |                                |
-+----+---------------+-------------+------+------+---------+--------------------------------+`
-	actual := buf.String()
-	if strings.TrimSpace(expected) != strings.TrimSpace(actual) {
-		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
++----+---------------+-------------+------+------+---------+--------------------------------+`)
+	if actual := strings.TrimSpace(buf.String()); expected != actual {
+		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
 	}
 }
