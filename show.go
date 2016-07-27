@@ -5,7 +5,6 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pinzolo/dbmodel"
-	"github.com/pinzolo/tablarian/converter"
 )
 
 var (
@@ -19,14 +18,21 @@ Options:
     -c 'config gile', --config 'config file'
         use config file instead of default config file(tablarian.config)
         if 'config file' starts with '@', it is treated as absolute file path.
+
+    -a, --all
+        show all metadata of table.(indices, foreign keys, referenced keys, constraints)
+        without this option, print only column definitions.
 	`,
 	}
 	configFile string
+	showAll    bool
 )
 
 func init() {
 	cmdShow.Flag.StringVar(&configFile, "config", "tablarian.config", "Config file path")
 	cmdShow.Flag.StringVar(&configFile, "c", "tablarian.config", "Config file path")
+	cmdShow.Flag.BoolVar(&showAll, "all", false, "Show all metadata of table.")
+	cmdShow.Flag.BoolVar(&showAll, "a", false, "Show all metadata of table.")
 }
 
 // runShow executes show command and return exit code.
@@ -40,13 +46,17 @@ func runShow(args []string) int {
 	db.Connect()
 	defer db.Disconnect()
 
-	tbl, err := db.Table(cfg.Schema, args[0], dbmodel.RequireNone)
+	opt := dbmodel.RequireNone
+	if showAll {
+		opt = dbmodel.RequireAll
+	}
+	tbl, err := db.Table(cfg.Schema, args[0], opt)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
 	}
 
-	err = printColumns(tbl.Columns(), cfg)
+	printTable(tbl)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
@@ -55,17 +65,84 @@ func runShow(args []string) int {
 	return 0
 }
 
-func printColumns(cols []*dbmodel.Column, cfg *Config) error {
-	conv, err := converter.FindConverter(cfg.Driver)
-	if err != nil {
-		return err
+func printTable(tbl *dbmodel.Table) {
+	printColumns(tbl.Columns())
+	if !showAll {
+		return
 	}
+
+	printIndices(tbl.Indices())
+	printConstraints(tbl.Constraints())
+	printForeignKeys(tbl.ForeignKeys())
+	printReferencedKyes(tbl.ReferencedKeys())
+}
+
+func printColumns(cols []*dbmodel.Column) {
 	w := tablewriter.NewWriter(o.out)
 	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	w.SetAutoWrapText(false)
 	for _, col := range cols {
-		w.Append(conv.Convert(col))
+		w.Append(convertColumn(col))
 	}
 	w.Render()
-	return nil
+}
+
+func printIndices(idxs []*dbmodel.Index) {
+	if len(idxs) == 0 {
+		return
+	}
+	fmt.Fprintln(o.out)
+	fmt.Fprintln(o.out, "### Indices")
+	w := tablewriter.NewWriter(o.out)
+	w.SetHeader([]string{"NAME", "COLUMNS", "UNIQUE"})
+	w.SetAutoWrapText(false)
+	for _, idx := range idxs {
+		w.Append(convertIndex(idx))
+	}
+	w.Render()
+}
+
+func printConstraints(cons []*dbmodel.Constraint) {
+	if len(cons) == 0 {
+		return
+	}
+	fmt.Fprintln(o.out)
+	fmt.Fprintln(o.out, "### Constraints")
+	w := tablewriter.NewWriter(o.out)
+	w.SetHeader([]string{"NAME", "KIND", "CONTENT"})
+	w.SetAutoWrapText(false)
+	for _, con := range cons {
+		w.Append(convertConstraint(con))
+	}
+	w.Render()
+}
+
+func printForeignKeys(fks []*dbmodel.ForeignKey) {
+	if len(fks) == 0 {
+		return
+	}
+	fmt.Fprintln(o.out)
+	fmt.Fprintln(o.out, "### Foreign keys")
+	w := tablewriter.NewWriter(o.out)
+	w.SetHeader([]string{"NAME", "COLUMNS", "FOREIGN TABLE", "FOREIGN COLUMNS"})
+	w.SetAutoWrapText(false)
+	for _, fk := range fks {
+		w.Append(convertForeignKey(fk))
+	}
+	w.Render()
+}
+
+func printReferencedKyes(rks []*dbmodel.ForeignKey) {
+	if len(rks) == 0 {
+		return
+	}
+	fmt.Fprintln(o.out)
+	fmt.Fprintln(o.out, "### Referenced keys")
+	w := tablewriter.NewWriter(o.out)
+	w.SetHeader([]string{"NAME", "SOURCE TABLE", "SOURCE COLUMNS", "COLUMNS"})
+	w.SetAutoWrapText(false)
+	for _, rk := range rks {
+		w.Append(convertReferencedKey(rk))
+	}
+	w.Render()
 }
