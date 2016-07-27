@@ -132,3 +132,31 @@ func TestCmdShowWithAllOption(t *testing.T) {
 		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
 	}
 }
+
+func TestCmdShowWithInvalidJson(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.err = buf
+	setupTestConfigFile("invalid-json")
+	args := []string{"sales_person"}
+	stat := cmdShow.Run(args)
+	if stat == 0 {
+		t.Error("Show command should not finish normally on invalid schema.")
+	}
+	if actual, expected := strings.TrimSpace(buf.String()), "unexpected end of JSON input"; actual != expected {
+		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
+	}
+}
+
+func TestCmdShowWithDbError(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.err = buf
+	setupTestConfigFile("db-error")
+	args := []string{"sales_person"}
+	stat := cmdShow.Run(args)
+	if stat == 0 {
+		t.Error("Show command should not finish normally on invalid schema.")
+	}
+	if actual, expected := strings.TrimSpace(buf.String()), `pq: role "foobar" does not exist`; actual != expected {
+		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
+	}
+}
