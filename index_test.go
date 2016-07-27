@@ -138,3 +138,29 @@ store`
 		t.Errorf("\nactual:\n%v\nexpected:%v\n", actual, expected)
 	}
 }
+
+func TestCmdIndexWithInvalidJson(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.err = buf
+	setupTestConfigFile("invalid-json")
+	stat := cmdIndex.Run([]string{})
+	if stat == 0 {
+		t.Error("Index command should not finish normally on invalid schema.")
+	}
+	if actual, expected := strings.TrimSpace(buf.String()), "unexpected end of JSON input"; actual != expected {
+		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
+	}
+}
+
+func TestCmdIndexWithDbError(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.err = buf
+	setupTestConfigFile("db-error")
+	stat := cmdIndex.Run([]string{})
+	if stat == 0 {
+		t.Error("Index command should not finish normally on invalid schema.")
+	}
+	if actual, expected := strings.TrimSpace(buf.String()), `pq: role "foobar" does not exist`; actual != expected {
+		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
+	}
+}

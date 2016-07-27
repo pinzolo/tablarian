@@ -57,20 +57,11 @@ func runShow(args []string) int {
 	}
 
 	printTable(tbl)
-	if err != nil {
-		fmt.Fprintln(o.err, err)
-		return 1
-	}
-
 	return 0
 }
 
 func printTable(tbl *dbmodel.Table) {
 	printColumns(tbl.Columns())
-	if !showAll {
-		return
-	}
-
 	printIndices(tbl.Indices())
 	printConstraints(tbl.Constraints())
 	printForeignKeys(tbl.ForeignKeys())
