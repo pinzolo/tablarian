@@ -31,7 +31,7 @@ func TestCmdShowWithOtherConfig(t *testing.T) {
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-test")
-	configFile = "test/tablarian-aw.config"
+	showOpt.configFile = "test/tablarian-aw.config"
 	args := []string{"currency"}
 	cmdShow.Run(args)
 	expected := strings.TrimSpace(`
@@ -55,7 +55,7 @@ func TestCmdShowWithOtherConfigByAbsPath(t *testing.T) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failure config loading: %v", err)
 	}
-	configFile = "@" + absPath
+	showOpt.configFile = "@" + absPath
 	args := []string{"currency"}
 	cmdShow.Run(args)
 	expected := strings.TrimSpace(`
@@ -75,7 +75,7 @@ func TestCmdShowWithAllOption(t *testing.T) {
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
-	showAll = true
+	showOpt.showAll = true
 	args := []string{"sales_person"}
 	cmdShow.Run(args)
 	expected := strings.TrimSpace(`

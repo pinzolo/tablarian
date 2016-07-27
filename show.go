@@ -7,6 +7,11 @@ import (
 	"github.com/pinzolo/dbmodel"
 )
 
+type showOption struct {
+	baseOption
+	showAll bool
+}
+
 var (
 	cmdShow = &Command{
 		Run:       runShow,
@@ -24,20 +29,19 @@ Options:
         without this option, print only column definitions.
 	`,
 	}
-	configFile string
-	showAll    bool
+	showOpt = showOption{}
 )
 
 func init() {
-	cmdShow.Flag.StringVar(&configFile, "config", "tablarian.config", "Config file path")
-	cmdShow.Flag.StringVar(&configFile, "c", "tablarian.config", "Config file path")
-	cmdShow.Flag.BoolVar(&showAll, "all", false, "Show all metadata of table.")
-	cmdShow.Flag.BoolVar(&showAll, "a", false, "Show all metadata of table.")
+	cmdShow.Flag.StringVar(&showOpt.configFile, "config", "tablarian.config", "Config file path")
+	cmdShow.Flag.StringVar(&showOpt.configFile, "c", "tablarian.config", "Config file path")
+	cmdShow.Flag.BoolVar(&showOpt.showAll, "all", false, "Show all metadata of table.")
+	cmdShow.Flag.BoolVar(&showOpt.showAll, "a", false, "Show all metadata of table.")
 }
 
 // runShow executes show command and return exit code.
 func runShow(args []string) int {
-	cfg, err := loadConfig(configFile)
+	cfg, err := loadConfig(showOpt.configFile)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
@@ -47,7 +51,7 @@ func runShow(args []string) int {
 	defer db.Disconnect()
 
 	opt := dbmodel.RequireNone
-	if showAll {
+	if showOpt.showAll {
 		opt = dbmodel.RequireAll
 	}
 	tbl, err := db.Table(cfg.Schema, args[0], opt)

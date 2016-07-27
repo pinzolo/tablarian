@@ -9,11 +9,17 @@ import (
 	"github.com/pinzolo/dbmodel"
 )
 
-var cmdIndex = &Command{
-	Run:       runIndex,
-	UsageLine: "index ",
-	Short:     "Enumerate all table names in schema.",
-	Long: `Enumerate table names in schema.
+type indexOption struct {
+	baseOption
+	withoutTableComment bool
+}
+
+var (
+	cmdIndex = &Command{
+		Run:       runIndex,
+		UsageLine: "index ",
+		Short:     "Enumerate all table names in schema.",
+		Long: `Enumerate table names in schema.
 
 Options:
     -c 'config gile', --config 'config file'
@@ -23,20 +29,20 @@ Options:
     -C, --no-comment
         Not print table comment. (default: false)
 	`,
-}
-
-var withoutTableComment = false
+	}
+	idxOpt = indexOption{}
+)
 
 func init() {
-	cmdIndex.Flag.StringVar(&configFile, "config", "tablarian.config", "Config file path")
-	cmdIndex.Flag.StringVar(&configFile, "c", "tablarian.config", "Config file path")
-	cmdIndex.Flag.BoolVar(&withoutTableComment, "no-comment", false, "Without table comment")
-	cmdIndex.Flag.BoolVar(&withoutTableComment, "C", false, "Without table comment")
+	cmdIndex.Flag.StringVar(&idxOpt.configFile, "config", "tablarian.config", "Config file path")
+	cmdIndex.Flag.StringVar(&idxOpt.configFile, "c", "tablarian.config", "Config file path")
+	cmdIndex.Flag.BoolVar(&idxOpt.withoutTableComment, "no-comment", false, "Without table comment")
+	cmdIndex.Flag.BoolVar(&idxOpt.withoutTableComment, "C", false, "Without table comment")
 }
 
 // runIndex executes index command and return exit code.
 func runIndex(args []string) int {
-	cfg, err := loadConfig(configFile)
+	cfg, err := loadConfig(idxOpt.configFile)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
@@ -69,7 +75,7 @@ func tableNamesLines(tables []*dbmodel.Table) []string {
 	w.SetAutoWrapText(false)
 	for _, tbl := range tables {
 		data := []string{tbl.Name()}
-		if !withoutTableComment {
+		if !idxOpt.withoutTableComment {
 			data = append(data, tbl.Comment())
 		}
 		w.Append(data)
