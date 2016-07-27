@@ -40,7 +40,7 @@ func runShow(args []string) int {
 	db.Connect()
 	defer db.Disconnect()
 
-	tbl, err := db.Table(cfg.Schema, args[0])
+	tbl, err := db.Table(cfg.Schema, args[0], dbmodel.RequireNone)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
