@@ -1,6 +1,7 @@
 # tablarian
 
 [![Build Status](https://travis-ci.org/pinzolo/tablarian.png)](http://travis-ci.org/pinzolo/tablarian)
+[![Coverage Status](https://coveralls.io/repos/github/pinzolo/tablarian/badge.svg?branch=master)](https://coveralls.io/github/pinzolo/tablarian?branch=master)
 
 ## Description
 
