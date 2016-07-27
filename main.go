@@ -44,6 +44,7 @@ type baseOption struct {
 }
 
 var o = &out{out: os.Stdout, err: os.Stderr}
+var conv Converter
 
 // Name returns the command's name: the first word in the usage line.
 func (c *Command) Name() string {

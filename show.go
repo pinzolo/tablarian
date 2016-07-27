@@ -60,6 +60,7 @@ func runShow(args []string) int {
 		return 1
 	}
 
+	conv = DefaultConverter{}
 	printTable(tbl)
 	return 0
 }
@@ -77,7 +78,7 @@ func printColumns(cols []*dbmodel.Column) {
 	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	w.SetAutoWrapText(false)
 	for _, col := range cols {
-		w.Append(convertColumn(col))
+		w.Append(conv.ConvertColumn(col))
 	}
 	w.Render()
 }
@@ -92,7 +93,7 @@ func printIndices(idxs []*dbmodel.Index) {
 	w.SetHeader([]string{"NAME", "COLUMNS", "UNIQUE"})
 	w.SetAutoWrapText(false)
 	for _, idx := range idxs {
-		w.Append(convertIndex(idx))
+		w.Append(conv.ConvertIndex(idx))
 	}
 	w.Render()
 }
@@ -107,7 +108,7 @@ func printConstraints(cons []*dbmodel.Constraint) {
 	w.SetHeader([]string{"NAME", "KIND", "CONTENT"})
 	w.SetAutoWrapText(false)
 	for _, con := range cons {
-		w.Append(convertConstraint(con))
+		w.Append(conv.ConvertConstraint(con))
 	}
 	w.Render()
 }
@@ -122,7 +123,7 @@ func printForeignKeys(fks []*dbmodel.ForeignKey) {
 	w.SetHeader([]string{"NAME", "COLUMNS", "FOREIGN TABLE", "FOREIGN COLUMNS"})
 	w.SetAutoWrapText(false)
 	for _, fk := range fks {
-		w.Append(convertForeignKey(fk))
+		w.Append(conv.ConvertForeignKey(fk))
 	}
 	w.Render()
 }
@@ -137,7 +138,7 @@ func printReferencedKyes(rks []*dbmodel.ForeignKey) {
 	w.SetHeader([]string{"NAME", "SOURCE TABLE", "SOURCE COLUMNS", "COLUMNS"})
 	w.SetAutoWrapText(false)
 	for _, rk := range rks {
-		w.Append(convertReferencedKey(rk))
+		w.Append(conv.ConvertReferencedKey(rk))
 	}
 	w.Render()
 }

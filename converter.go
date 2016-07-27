@@ -7,7 +7,18 @@ import (
 	"github.com/pinzolo/dbmodel"
 )
 
-func convertColumn(c *dbmodel.Column) []string {
+// Converter is data Converter that Convert to table data from dbmodel.
+type Converter interface {
+	ConvertColumn(*dbmodel.Column) []string
+	ConvertIndex(*dbmodel.Index) []string
+	ConvertConstraint(*dbmodel.Constraint) []string
+	ConvertForeignKey(*dbmodel.ForeignKey) []string
+	ConvertReferencedKey(*dbmodel.ForeignKey) []string
+}
+
+type DefaultConverter struct{}
+
+func (dc DefaultConverter) ConvertColumn(c *dbmodel.Column) []string {
 	null := "NO"
 	if c.IsNullable() {
 		null = ""
@@ -27,7 +38,7 @@ func convertColumn(c *dbmodel.Column) []string {
 	}
 }
 
-func convertIndex(idx *dbmodel.Index) []string {
+func (dc DefaultConverter) ConvertIndex(idx *dbmodel.Index) []string {
 	cols := make([]string, 0, len(idx.Columns()))
 	for _, col := range idx.Columns() {
 		cols = append(cols, col.Name())
@@ -43,7 +54,7 @@ func convertIndex(idx *dbmodel.Index) []string {
 	}
 }
 
-func convertConstraint(con *dbmodel.Constraint) []string {
+func (dc DefaultConverter) ConvertConstraint(con *dbmodel.Constraint) []string {
 	return []string{
 		con.Name(),
 		con.Kind(),
@@ -51,7 +62,7 @@ func convertConstraint(con *dbmodel.Constraint) []string {
 	}
 }
 
-func convertForeignKey(fk *dbmodel.ForeignKey) []string {
+func (dc DefaultConverter) ConvertForeignKey(fk *dbmodel.ForeignKey) []string {
 	fCols := make([]string, 0, len(fk.ColumnReferences()))
 	tCols := make([]string, 0, len(fk.ColumnReferences()))
 	for _, ref := range fk.ColumnReferences() {
@@ -72,7 +83,7 @@ func convertForeignKey(fk *dbmodel.ForeignKey) []string {
 	}
 }
 
-func convertReferencedKey(rk *dbmodel.ForeignKey) []string {
+func (dc DefaultConverter) ConvertReferencedKey(rk *dbmodel.ForeignKey) []string {
 	fCols := make([]string, 0, len(rk.ColumnReferences()))
 	tCols := make([]string, 0, len(rk.ColumnReferences()))
 	for _, ref := range rk.ColumnReferences() {
