@@ -114,6 +114,22 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 	}
 }
 
+func TestLoadConfigWithInvalidJson(t *testing.T) {
+	setupTestConfigFile("invalid-json")
+	_, err := loadConfig("tablarian.config")
+	if err == nil {
+		t.Error("Config loading should fail on invalid json.")
+	}
+}
+
+func TestLoadConfigWithConfigFileNotFound(t *testing.T) {
+	deleteTestConfigFile()
+	_, err := loadConfig("tablarian.config")
+	if err == nil {
+		t.Error("Config loading should fail on config file not exists.")
+	}
+}
+
 func setupTestConfigFile(fileName string) error {
 	deleteTestConfigFile()
 	wd, err := os.Getwd()
