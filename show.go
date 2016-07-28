@@ -7,6 +7,11 @@ import (
 	"github.com/pinzolo/dbmodel"
 )
 
+type showOption struct {
+	baseOption
+	showAll bool
+}
+
 var (
 	cmdShow = &Command{
 		Run:       runShow,
@@ -22,22 +27,27 @@ Options:
     -a, --all
         show all metadata of table.(indices, foreign keys, referenced keys, constraints)
         without this option, print only column definitions.
+
+    -p, --pretty
+        convert data type to usually name.
+        this option is author's personal option. (only PostgreSQL)
 	`,
 	}
-	configFile string
-	showAll    bool
+	showOpt = showOption{}
 )
 
 func init() {
-	cmdShow.Flag.StringVar(&configFile, "config", "tablarian.config", "Config file path")
-	cmdShow.Flag.StringVar(&configFile, "c", "tablarian.config", "Config file path")
-	cmdShow.Flag.BoolVar(&showAll, "all", false, "Show all metadata of table.")
-	cmdShow.Flag.BoolVar(&showAll, "a", false, "Show all metadata of table.")
+	cmdShow.Flag.StringVar(&showOpt.configFile, "config", "tablarian.config", "Config file path")
+	cmdShow.Flag.StringVar(&showOpt.configFile, "c", "tablarian.config", "Config file path")
+	cmdShow.Flag.BoolVar(&showOpt.showAll, "all", false, "Show all metadata of table")
+	cmdShow.Flag.BoolVar(&showOpt.showAll, "a", false, "Show all metadata of table")
+	cmdShow.Flag.BoolVar(&showOpt.prettyPrint, "pretty", false, "Pretty print")
+	cmdShow.Flag.BoolVar(&showOpt.prettyPrint, "p", false, "Pretty print")
 }
 
 // runShow executes show command and return exit code.
 func runShow(args []string) int {
-	cfg, err := loadConfig(configFile)
+	cfg, err := loadConfig(showOpt.configFile)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
@@ -47,7 +57,7 @@ func runShow(args []string) int {
 	defer db.Disconnect()
 
 	opt := dbmodel.RequireNone
-	if showAll {
+	if showOpt.showAll {
 		opt = dbmodel.RequireAll
 	}
 	tbl, err := db.Table(cfg.Schema, args[0], opt)
@@ -56,6 +66,10 @@ func runShow(args []string) int {
 		return 1
 	}
 
+	conv = defaultConverter{}
+	if showOpt.prettyPrint && cfg.Driver == "postgres" {
+		conv = postgresPrettyConverter{}
+	}
 	printTable(tbl)
 	return 0
 }
@@ -73,7 +87,7 @@ func printColumns(cols []*dbmodel.Column) {
 	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	w.SetAutoWrapText(false)
 	for _, col := range cols {
-		w.Append(convertColumn(col))
+		w.Append(conv.ConvertColumn(col))
 	}
 	w.Render()
 }
@@ -88,7 +102,7 @@ func printIndices(idxs []*dbmodel.Index) {
 	w.SetHeader([]string{"NAME", "COLUMNS", "UNIQUE"})
 	w.SetAutoWrapText(false)
 	for _, idx := range idxs {
-		w.Append(convertIndex(idx))
+		w.Append(conv.ConvertIndex(idx))
 	}
 	w.Render()
 }
@@ -103,7 +117,7 @@ func printConstraints(cons []*dbmodel.Constraint) {
 	w.SetHeader([]string{"NAME", "KIND", "CONTENT"})
 	w.SetAutoWrapText(false)
 	for _, con := range cons {
-		w.Append(convertConstraint(con))
+		w.Append(conv.ConvertConstraint(con))
 	}
 	w.Render()
 }
@@ -118,7 +132,7 @@ func printForeignKeys(fks []*dbmodel.ForeignKey) {
 	w.SetHeader([]string{"NAME", "COLUMNS", "FOREIGN TABLE", "FOREIGN COLUMNS"})
 	w.SetAutoWrapText(false)
 	for _, fk := range fks {
-		w.Append(convertForeignKey(fk))
+		w.Append(conv.ConvertForeignKey(fk))
 	}
 	w.Render()
 }
@@ -133,7 +147,7 @@ func printReferencedKyes(rks []*dbmodel.ForeignKey) {
 	w.SetHeader([]string{"NAME", "SOURCE TABLE", "SOURCE COLUMNS", "COLUMNS"})
 	w.SetAutoWrapText(false)
 	for _, rk := range rks {
-		w.Append(convertReferencedKey(rk))
+		w.Append(conv.ConvertReferencedKey(rk))
 	}
 	w.Render()
 }

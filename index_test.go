@@ -43,7 +43,7 @@ func TestCmdIndexWithOtherConfig(t *testing.T) {
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-test")
-	configFile = "test/tablarian-aw.config"
+	idxOpt.configFile = "test/tablarian-aw.config"
 	cmdIndex.Run([]string{})
 	expected := `
 country_region_currency
@@ -79,7 +79,7 @@ func TestCmdIndexWithOtherConfigByAbsPath(t *testing.T) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failure config loading: %v", err)
 	}
-	configFile = "@" + absPath
+	idxOpt.configFile = "@" + absPath
 	cmdIndex.Run([]string{})
 	expected := `
 country_region_currency
@@ -111,7 +111,7 @@ func TestCmdIndexWithNoCommentOption(t *testing.T) {
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
-	withoutTableComment = true
+	idxOpt.withoutTableComment = true
 	cmdIndex.Run([]string{})
 	expected := `
 country_region_currency

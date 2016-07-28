@@ -38,7 +38,13 @@ type out struct {
 	err io.Writer
 }
 
+type baseOption struct {
+	configFile  string
+	prettyPrint bool
+}
+
 var o = &out{out: os.Stdout, err: os.Stderr}
+var conv Converter
 
 // Name returns the command's name: the first word in the usage line.
 func (c *Command) Name() string {

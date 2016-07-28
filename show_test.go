@@ -31,7 +31,7 @@ func TestCmdShowWithOtherConfig(t *testing.T) {
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-test")
-	configFile = "test/tablarian-aw.config"
+	showOpt.configFile = "test/tablarian-aw.config"
 	args := []string{"currency"}
 	cmdShow.Run(args)
 	expected := strings.TrimSpace(`
@@ -55,7 +55,7 @@ func TestCmdShowWithOtherConfigByAbsPath(t *testing.T) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failure config loading: %v", err)
 	}
-	configFile = "@" + absPath
+	showOpt.configFile = "@" + absPath
 	args := []string{"currency"}
 	cmdShow.Run(args)
 	expected := strings.TrimSpace(`
@@ -75,7 +75,7 @@ func TestCmdShowWithAllOption(t *testing.T) {
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
-	showAll = true
+	showOpt.showAll = true
 	args := []string{"sales_person"}
 	cmdShow.Run(args)
 	expected := strings.TrimSpace(`
@@ -158,5 +158,29 @@ func TestCmdShowWithDbError(t *testing.T) {
 	}
 	if actual, expected := strings.TrimSpace(buf.String()), `pq: role "foobar" does not exist`; actual != expected {
 		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
+	}
+}
+
+func TestCmdShowWithPrettyOption(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.out = buf
+	setupTestConfigFile("tablarian-aw")
+	showOpt.showAll = false
+	showOpt.prettyPrint = true
+	args := []string{"customer"}
+	cmdShow.Run(args)
+	expected := strings.TrimSpace(`
++----+---------------+-----------+------+------+--------------------+----------------------------------------------------------------------------------------------------------+
+| PK |     NAME      |   TYPE    | SIZE | NULL |      DEFAULT       |                                                 COMMENT                                                  |
++----+---------------+-----------+------+------+--------------------+----------------------------------------------------------------------------------------------------------+
+|  1 | customer_id   | serial    |      | NO   |                    | Primary key.                                                                                             |
+|    | person_id     | integer   |      |      |                    | Foreign key to person.business_entity_id                                                                 |
+|    | store_id      | integer   |      |      |                    | Foreign key to Store.business_entity_id                                                                  |
+|    | territory_id  | integer   |      |      |                    | ID of the territory in which the customer is located. Foreign key to sales_territory.sales_territory_id. |
+|    | rowguid       | uuid      |      | NO   | uuid_generate_v1() |                                                                                                          |
+|    | modified_date | timestamp |    6 | NO   | now()              |                                                                                                          |
++----+---------------+-----------+------+------+--------------------+----------------------------------------------------------------------------------------------------------+`)
+	if actual := strings.TrimSpace(buf.String()); expected != actual {
+		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
 	}
 }
