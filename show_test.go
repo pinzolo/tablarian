@@ -160,3 +160,27 @@ func TestCmdShowWithDbError(t *testing.T) {
 		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
 	}
 }
+
+func TestCmdShowWithPrettyOption(t *testing.T) {
+	buf := &bytes.Buffer{}
+	o.out = buf
+	setupTestConfigFile("tablarian-aw")
+	showOpt.showAll = false
+	showOpt.prettyPrint = true
+	args := []string{"customer"}
+	cmdShow.Run(args)
+	expected := strings.TrimSpace(`
++----+---------------+-----------+------+------+--------------------+----------------------------------------------------------------------------------------------------------+
+| PK |     NAME      |   TYPE    | SIZE | NULL |      DEFAULT       |                                                 COMMENT                                                  |
++----+---------------+-----------+------+------+--------------------+----------------------------------------------------------------------------------------------------------+
+|  1 | customer_id   | serial    |      | NO   |                    | Primary key.                                                                                             |
+|    | person_id     | integer   |      |      |                    | Foreign key to person.business_entity_id                                                                 |
+|    | store_id      | integer   |      |      |                    | Foreign key to Store.business_entity_id                                                                  |
+|    | territory_id  | integer   |      |      |                    | ID of the territory in which the customer is located. Foreign key to sales_territory.sales_territory_id. |
+|    | rowguid       | uuid      |      | NO   | uuid_generate_v1() |                                                                                                          |
+|    | modified_date | timestamp |    6 | NO   | now()              |                                                                                                          |
++----+---------------+-----------+------+------+--------------------+----------------------------------------------------------------------------------------------------------+`)
+	if actual := strings.TrimSpace(buf.String()); expected != actual {
+		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
+	}
+}
