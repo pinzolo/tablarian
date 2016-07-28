@@ -68,7 +68,7 @@ func (c *Command) Usage() {
 var commands = []*Command{
 	cmdVersion,
 	cmdShow,
-	cmdOut,
+	cmdPublish,
 	cmdIndex,
 }
 

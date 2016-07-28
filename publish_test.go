@@ -2,6 +2,6 @@ package main
 
 import "testing"
 
-func TestCmdOut(t *testing.T) {
+func TestCmdPublish(t *testing.T) {
 	// Write your code here
 }
