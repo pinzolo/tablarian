@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/pinzolo/dbmodel"
 )
@@ -17,19 +16,11 @@ type postgresPrettyConverter struct {
 }
 
 func (ppc postgresPrettyConverter) ConvertColumn(col *dbmodel.Column) []string {
-	null := "NO"
-	if col.IsNullable() {
-		null = ""
-	}
-	var pkPosition string
-	if col.PrimaryKeyPosition() > 0 {
-		pkPosition = strconv.FormatInt(col.PrimaryKeyPosition(), 10)
-	}
-
-	dataType := col.DataType()
-	size := col.Size().String()
-	defVal := col.DefaultValue()
-	switch col.DataType() {
+	base := ppc.defaultConverter.ConvertColumn(col)
+	dataType := base[2]
+	size := base[3]
+	defVal := base[5]
+	switch dataType {
 	case "int2":
 		if isSerial(col) {
 			dataType = "smallserial"
@@ -62,7 +53,7 @@ func (ppc postgresPrettyConverter) ConvertColumn(col *dbmodel.Column) []string {
 		size = ""
 	}
 
-	return []string{pkPosition, col.Name(), dataType, size, null, defVal, col.Comment()}
+	return []string{base[0], base[1], dataType, size, base[4], defVal, base[6]}
 }
 
 func isSerial(col *dbmodel.Column) bool {
