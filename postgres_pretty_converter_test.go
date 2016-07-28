@@ -39,7 +39,7 @@ func TestInt4ToSerial(t *testing.T) {
 	}
 }
 
-func TestInt4ToSerialLongSeqName(t *testing.T) {
+func TestInt4ToSerialLongTableAndColumn(t *testing.T) {
 	conv := postgresPrettyConverter{}
 	size := dbmodel.NewSize(
 		sql.NullInt64{Valid: false},
@@ -47,6 +47,40 @@ func TestInt4ToSerialLongSeqName(t *testing.T) {
 		sql.NullInt64{Int64: 0, Valid: true},
 	)
 	col := dbmodel.NewColumn("foo", "bank_output_record_user_sales_detail", "bank_output_record_user_sales_detail_id", "Primary key of items", "int4", size, false, "nextval('bank_output_record_user_sales_bank_output_record_user_sales_seq'::regclass)", 0)
+	data := conv.ConvertColumn(&col)
+	if a, e := data[2], "serial"; a != e {
+		t.Errorf("Third value should be serial. expected: %v, actual: %v", e, a)
+	}
+	if a, e := data[5], ""; a != e {
+		t.Errorf("Sixth value should be empty on data type is serial. expected: %v, actual: %v", e, a)
+	}
+}
+
+func TestInt4ToSerialLongTable(t *testing.T) {
+	conv := postgresPrettyConverter{}
+	size := dbmodel.NewSize(
+		sql.NullInt64{Valid: false},
+		sql.NullInt64{Int64: 32, Valid: true},
+		sql.NullInt64{Int64: 0, Valid: true},
+	)
+	col := dbmodel.NewColumn("foo", "long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12_3456_7890", "id", "Primary key of items", "int4", size, false, "nextval('long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12__id_seq'::regclass)", 0)
+	data := conv.ConvertColumn(&col)
+	if a, e := data[2], "serial"; a != e {
+		t.Errorf("Third value should be serial. expected: %v, actual: %v", e, a)
+	}
+	if a, e := data[5], ""; a != e {
+		t.Errorf("Sixth value should be empty on data type is serial. expected: %v, actual: %v", e, a)
+	}
+}
+
+func TestInt4ToSerialLongColumn(t *testing.T) {
+	conv := postgresPrettyConverter{}
+	size := dbmodel.NewSize(
+		sql.NullInt64{Valid: false},
+		sql.NullInt64{Int64: 32, Valid: true},
+		sql.NullInt64{Int64: 0, Valid: true},
+	)
+	col := dbmodel.NewColumn("foo", "st", "long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12_3456_7890", "Primary key of items", "int4", size, false, "nextval('st_long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12__seq'::regclass)", 0)
 	data := conv.ConvertColumn(&col)
 	if a, e := data[2], "serial"; a != e {
 		t.Errorf("Third value should be serial. expected: %v, actual: %v", e, a)
@@ -137,7 +171,7 @@ func TestInt2ToSmallserial(t *testing.T) {
 	}
 }
 
-func TestInt2ToSmallserialLongSeqName(t *testing.T) {
+func TestInt2ToSmallserialLongTableAndColumn(t *testing.T) {
 	conv := postgresPrettyConverter{}
 	size := dbmodel.NewSize(
 		sql.NullInt64{Valid: false},
@@ -145,6 +179,40 @@ func TestInt2ToSmallserialLongSeqName(t *testing.T) {
 		sql.NullInt64{Int64: 0, Valid: true},
 	)
 	col := dbmodel.NewColumn("foo", "bank_output_record_user_sales_detail", "bank_output_record_user_sales_detail_id", "Primary key of items", "int2", size, false, "nextval('bank_output_record_user_sales_bank_output_record_user_sales_seq'::regclass)", 0)
+	data := conv.ConvertColumn(&col)
+	if a, e := data[2], "smallserial"; a != e {
+		t.Errorf("Third value should be smallserial. expected: %v, actual: %v", e, a)
+	}
+	if a, e := data[5], ""; a != e {
+		t.Errorf("Sixth value should be empty on data type is smallserial. expected: %v, actual: %v", e, a)
+	}
+}
+
+func TestInt2ToSmallserialLongTable(t *testing.T) {
+	conv := postgresPrettyConverter{}
+	size := dbmodel.NewSize(
+		sql.NullInt64{Valid: false},
+		sql.NullInt64{Int64: 16, Valid: true},
+		sql.NullInt64{Int64: 0, Valid: true},
+	)
+	col := dbmodel.NewColumn("foo", "long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12_3456_7890", "id", "Primary key of items", "int2", size, false, "nextval('long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12__id_seq'::regclass)", 0)
+	data := conv.ConvertColumn(&col)
+	if a, e := data[2], "smallserial"; a != e {
+		t.Errorf("Third value should be smallserial. expected: %v, actual: %v", e, a)
+	}
+	if a, e := data[5], ""; a != e {
+		t.Errorf("Sixth value should be empty on data type is smallserial. expected: %v, actual: %v", e, a)
+	}
+}
+
+func TestInt2ToSmallserialLongColumn(t *testing.T) {
+	conv := postgresPrettyConverter{}
+	size := dbmodel.NewSize(
+		sql.NullInt64{Valid: false},
+		sql.NullInt64{Int64: 16, Valid: true},
+		sql.NullInt64{Int64: 0, Valid: true},
+	)
+	col := dbmodel.NewColumn("foo", "st", "long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12_3456_7890", "Primary key of items", "int2", size, false, "nextval('st_long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12__seq'::regclass)", 0)
 	data := conv.ConvertColumn(&col)
 	if a, e := data[2], "smallserial"; a != e {
 		t.Errorf("Third value should be smallserial. expected: %v, actual: %v", e, a)
@@ -207,7 +275,7 @@ func TestInt8ToBigserial(t *testing.T) {
 	conv := postgresPrettyConverter{}
 	size := dbmodel.NewSize(
 		sql.NullInt64{Valid: false},
-		sql.NullInt64{Int64: 32, Valid: true},
+		sql.NullInt64{Int64: 64, Valid: true},
 		sql.NullInt64{Int64: 0, Valid: true},
 	)
 	col := dbmodel.NewColumn("foo", "items", "id", "Primary key of items", "int8", size, false, "nextval('items_id_seq'::regclass)", 0)
@@ -235,7 +303,7 @@ func TestInt8ToBigserial(t *testing.T) {
 	}
 }
 
-func TestInt8ToBigserialLongSeqName(t *testing.T) {
+func TestInt8ToBigserialLongTableAndColumn(t *testing.T) {
 	conv := postgresPrettyConverter{}
 	size := dbmodel.NewSize(
 		sql.NullInt64{Valid: false},
@@ -243,6 +311,40 @@ func TestInt8ToBigserialLongSeqName(t *testing.T) {
 		sql.NullInt64{Int64: 0, Valid: true},
 	)
 	col := dbmodel.NewColumn("foo", "bank_output_record_user_sales_detail", "bank_output_record_user_sales_detail_id", "Primary key of items", "int8", size, false, "nextval('bank_output_record_user_sales_bank_output_record_user_sales_seq'::regclass)", 0)
+	data := conv.ConvertColumn(&col)
+	if a, e := data[2], "bigserial"; a != e {
+		t.Errorf("Third value should be bigserial. expected: %v, actual: %v", e, a)
+	}
+	if a, e := data[5], ""; a != e {
+		t.Errorf("Sixth value should be empty on data type is bigserial. expected: %v, actual: %v", e, a)
+	}
+}
+
+func TestInt8ToBigserialLongTable(t *testing.T) {
+	conv := postgresPrettyConverter{}
+	size := dbmodel.NewSize(
+		sql.NullInt64{Valid: false},
+		sql.NullInt64{Int64: 64, Valid: true},
+		sql.NullInt64{Int64: 0, Valid: true},
+	)
+	col := dbmodel.NewColumn("foo", "long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12_3456_7890", "id", "Primary key of items", "int8", size, false, "nextval('long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12__id_seq'::regclass)", 0)
+	data := conv.ConvertColumn(&col)
+	if a, e := data[2], "bigserial"; a != e {
+		t.Errorf("Third value should be bigserial. expected: %v, actual: %v", e, a)
+	}
+	if a, e := data[5], ""; a != e {
+		t.Errorf("Sixth value should be empty on data type is bigserial. expected: %v, actual: %v", e, a)
+	}
+}
+
+func TestInt8ToBigserialLongColumn(t *testing.T) {
+	conv := postgresPrettyConverter{}
+	size := dbmodel.NewSize(
+		sql.NullInt64{Valid: false},
+		sql.NullInt64{Int64: 64, Valid: true},
+		sql.NullInt64{Int64: 0, Valid: true},
+	)
+	col := dbmodel.NewColumn("foo", "st", "long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12_3456_7890", "Primary key of items", "int8", size, false, "nextval('st_long_long_table_name_abcd_efgh_ijkl_mnop_qrst_uvwx_yz12__seq'::regclass)", 0)
 	data := conv.ConvertColumn(&col)
 	if a, e := data[2], "bigserial"; a != e {
 		t.Errorf("Third value should be bigserial. expected: %v, actual: %v", e, a)
