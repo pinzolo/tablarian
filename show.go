@@ -27,6 +27,10 @@ Options:
     -a, --all
         show all metadata of table.(indices, foreign keys, referenced keys, constraints)
         without this option, print only column definitions.
+
+    -p, --pretty
+        convert data type to usually name.
+        this option is author's personal option. (only PostgreSQL)
 	`,
 	}
 	showOpt = showOption{}
@@ -35,8 +39,10 @@ Options:
 func init() {
 	cmdShow.Flag.StringVar(&showOpt.configFile, "config", "tablarian.config", "Config file path")
 	cmdShow.Flag.StringVar(&showOpt.configFile, "c", "tablarian.config", "Config file path")
-	cmdShow.Flag.BoolVar(&showOpt.showAll, "all", false, "Show all metadata of table.")
-	cmdShow.Flag.BoolVar(&showOpt.showAll, "a", false, "Show all metadata of table.")
+	cmdShow.Flag.BoolVar(&showOpt.showAll, "all", false, "Show all metadata of table")
+	cmdShow.Flag.BoolVar(&showOpt.showAll, "a", false, "Show all metadata of table")
+	cmdShow.Flag.BoolVar(&showOpt.prettyPrint, "pretty", false, "Pretty print")
+	cmdShow.Flag.BoolVar(&showOpt.prettyPrint, "p", false, "Pretty print")
 }
 
 // runShow executes show command and return exit code.
@@ -60,7 +66,10 @@ func runShow(args []string) int {
 		return 1
 	}
 
-	conv = DefaultConverter{}
+	conv = defaultConverter{}
+	if showOpt.prettyPrint && cfg.Driver == "postgres" {
+		conv = postgresPrettyConverter{}
+	}
 	printTable(tbl)
 	return 0
 }

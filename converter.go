@@ -16,9 +16,9 @@ type Converter interface {
 	ConvertReferencedKey(*dbmodel.ForeignKey) []string
 }
 
-type DefaultConverter struct{}
+type defaultConverter struct{}
 
-func (dc DefaultConverter) ConvertColumn(c *dbmodel.Column) []string {
+func (dc defaultConverter) ConvertColumn(c *dbmodel.Column) []string {
 	null := "NO"
 	if c.IsNullable() {
 		null = ""
@@ -27,18 +27,10 @@ func (dc DefaultConverter) ConvertColumn(c *dbmodel.Column) []string {
 	if c.PrimaryKeyPosition() > 0 {
 		pkPosition = strconv.FormatInt(c.PrimaryKeyPosition(), 10)
 	}
-	return []string{
-		pkPosition,
-		c.Name(),
-		c.DataType(),
-		c.Size().String(),
-		null,
-		c.DefaultValue(),
-		c.Comment(),
-	}
+	return []string{pkPosition, c.Name(), c.DataType(), c.Size().String(), null, c.DefaultValue(), c.Comment()}
 }
 
-func (dc DefaultConverter) ConvertIndex(idx *dbmodel.Index) []string {
+func (dc defaultConverter) ConvertIndex(idx *dbmodel.Index) []string {
 	cols := make([]string, 0, len(idx.Columns()))
 	for _, col := range idx.Columns() {
 		cols = append(cols, col.Name())
@@ -47,22 +39,14 @@ func (dc DefaultConverter) ConvertIndex(idx *dbmodel.Index) []string {
 	if idx.IsUnique() {
 		uniq = "YES"
 	}
-	return []string{
-		idx.Name(),
-		strings.Join(cols, ", "),
-		uniq,
-	}
+	return []string{idx.Name(), strings.Join(cols, ", "), uniq}
 }
 
-func (dc DefaultConverter) ConvertConstraint(con *dbmodel.Constraint) []string {
-	return []string{
-		con.Name(),
-		con.Kind(),
-		con.Content(),
-	}
+func (dc defaultConverter) ConvertConstraint(con *dbmodel.Constraint) []string {
+	return []string{con.Name(), con.Kind(), con.Content()}
 }
 
-func (dc DefaultConverter) ConvertForeignKey(fk *dbmodel.ForeignKey) []string {
+func (dc defaultConverter) ConvertForeignKey(fk *dbmodel.ForeignKey) []string {
 	fCols := make([]string, 0, len(fk.ColumnReferences()))
 	tCols := make([]string, 0, len(fk.ColumnReferences()))
 	for _, ref := range fk.ColumnReferences() {
@@ -75,15 +59,10 @@ func (dc DefaultConverter) ConvertForeignKey(fk *dbmodel.ForeignKey) []string {
 	if from.Schema() != to.Schema() {
 		tbl = to.Schema() + "." + tbl
 	}
-	return []string{
-		fk.Name(),
-		strings.Join(fCols, ", "),
-		tbl,
-		strings.Join(tCols, ", "),
-	}
+	return []string{fk.Name(), strings.Join(fCols, ", "), tbl, strings.Join(tCols, ", ")}
 }
 
-func (dc DefaultConverter) ConvertReferencedKey(rk *dbmodel.ForeignKey) []string {
+func (dc defaultConverter) ConvertReferencedKey(rk *dbmodel.ForeignKey) []string {
 	fCols := make([]string, 0, len(rk.ColumnReferences()))
 	tCols := make([]string, 0, len(rk.ColumnReferences()))
 	for _, ref := range rk.ColumnReferences() {
@@ -96,10 +75,5 @@ func (dc DefaultConverter) ConvertReferencedKey(rk *dbmodel.ForeignKey) []string
 	if from.Schema() != to.Schema() {
 		tbl = from.Schema() + "." + tbl
 	}
-	return []string{
-		rk.Name(),
-		tbl,
-		strings.Join(fCols, ", "),
-		strings.Join(tCols, ", "),
-	}
+	return []string{rk.Name(), tbl, strings.Join(fCols, ", "), strings.Join(tCols, ", ")}
 }
