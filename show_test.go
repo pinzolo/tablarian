@@ -9,6 +9,7 @@ import (
 )
 
 func TestCmdShow(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
@@ -28,6 +29,7 @@ func TestCmdShow(t *testing.T) {
 }
 
 func TestCmdShowWithOtherConfig(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-test")
@@ -48,6 +50,7 @@ func TestCmdShowWithOtherConfig(t *testing.T) {
 }
 
 func TestCmdShowWithOtherConfigByAbsPath(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
@@ -72,6 +75,7 @@ func TestCmdShowWithOtherConfigByAbsPath(t *testing.T) {
 }
 
 func TestCmdShowWithAllOption(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
@@ -134,6 +138,7 @@ func TestCmdShowWithAllOption(t *testing.T) {
 }
 
 func TestCmdShowWithInvalidJson(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.err = buf
 	setupTestConfigFile("invalid-json")
@@ -148,6 +153,7 @@ func TestCmdShowWithInvalidJson(t *testing.T) {
 }
 
 func TestCmdShowWithDbError(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.err = buf
 	setupTestConfigFile("db-error")
@@ -162,10 +168,10 @@ func TestCmdShowWithDbError(t *testing.T) {
 }
 
 func TestCmdShowWithPrettyOption(t *testing.T) {
+	initShowOpt()
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
-	showOpt.showAll = false
 	showOpt.prettyPrint = true
 	args := []string{"customer"}
 	cmdShow.Run(args)
@@ -183,4 +189,10 @@ func TestCmdShowWithPrettyOption(t *testing.T) {
 	if actual := strings.TrimSpace(buf.String()); expected != actual {
 		t.Errorf("\nactual:\n%v\nexpected:\n%v\n", actual, expected)
 	}
+}
+
+func initShowOpt() {
+	showOpt.configFile = "tablarian.config"
+	showOpt.showAll = false
+	showOpt.prettyPrint = false
 }
