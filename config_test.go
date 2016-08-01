@@ -41,6 +41,9 @@ func TestLoadDefaultConfig(t *testing.T) {
 	if cfg.Options["sslmode"] != "disable" {
 		t.Errorf("Failure options config loading. 'sslmode: disabled' is expected but actual is %#v", cfg.Options)
 	}
+	if cfg.Out != "out" {
+		t.Errorf("Failure out config loading. 'out' is expected but actual is %s", cfg.Schema)
+	}
 }
 
 func TestLoadOtherConfig(t *testing.T) {
@@ -75,6 +78,9 @@ func TestLoadOtherConfig(t *testing.T) {
 	}
 	if cfg.Options["sslmode"] != "disable" {
 		t.Errorf("Failure options config loading. 'sslmode: disabled' is expected but actual is %#v", cfg.Options)
+	}
+	if cfg.Out != "out" {
+		t.Errorf("Failure out config loading. 'out' is expected but actual is %s", cfg.Schema)
 	}
 }
 
@@ -111,6 +117,9 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 	}
 	if cfg.Options["sslmode"] != "disable" {
 		t.Errorf("Failure options config loading. 'sslmode: disabled' is expected but actual is %#v", cfg.Options)
+	}
+	if cfg.Out != "out" {
+		t.Errorf("Failure out config loading. 'out' is expected but actual is %s", cfg.Schema)
 	}
 }
 

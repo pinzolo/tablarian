@@ -21,6 +21,7 @@ type Config struct {
 	Database string            `json:"database"`
 	Schema   string            `json:"schema"`
 	Options  map[string]string `json:"options"`
+	Out      string            `json:"out"`
 }
 
 func loadConfig(path string) (*Config, error) {
