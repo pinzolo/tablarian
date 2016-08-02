@@ -14,6 +14,7 @@ import (
 type Config struct {
 	FilePath string            `json:"-"`
 	Driver   string            `json:"driver"`
+	Version  string            `json:"version"`
 	Host     string            `json:"host"`
 	Port     int               `json:"port"`
 	User     string            `json:"user"`
@@ -43,8 +44,8 @@ func loadConfig(path string) (*Config, error) {
 }
 
 func dbClientFor(c *Config) *dbmodel.Client {
-	ds := dbmodel.NewDataSource(c.Host, c.Port, c.User, c.Password, c.Database, c.Options)
-	return dbmodel.NewClient(c.Driver, ds)
+	ds := dbmodel.NewDataSource(c.Driver, c.Version, c.Host, c.Port, c.User, c.Password, c.Database, c.Options)
+	return dbmodel.NewClient(ds)
 }
 
 func resolvePath(path string) (string, error) {

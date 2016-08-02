@@ -20,6 +20,9 @@ func TestLoadDefaultConfig(t *testing.T) {
 	if cfg.Driver != "postgres" {
 		t.Errorf("Failure driver config loading. 'postgres' is expected but actual is %s", cfg.Driver)
 	}
+	if cfg.Version != "9.4" {
+		t.Errorf("Failure version config loading. '9.4' is expected but actual is %s", cfg.Version)
+	}
 	if cfg.Host != "localhost" {
 		t.Errorf("Failure host config loading. 'localhost' is expected but actual is %s", cfg.Host)
 	}
@@ -57,6 +60,9 @@ func TestLoadOtherConfig(t *testing.T) {
 	}
 	if cfg.Driver != "postgres" {
 		t.Errorf("Failure driver config loading. 'postgres' is expected but actual is %s", cfg.Driver)
+	}
+	if cfg.Version != "9.4" {
+		t.Errorf("Failure version config loading. '9.4' is expected but actual is %s", cfg.Version)
 	}
 	if cfg.Host != "localhost" {
 		t.Errorf("Failure host config loading. 'localhost' is expected but actual is %s", cfg.Host)
@@ -96,6 +102,9 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 	}
 	if cfg.Driver != "postgres" {
 		t.Errorf("Failure driver config loading. 'postgres' is expected but actual is %s", cfg.Driver)
+	}
+	if cfg.Version != "9.4" {
+		t.Errorf("Failure version config loading. '9.4' is expected but actual is %s", cfg.Version)
 	}
 	if cfg.Host != "localhost" {
 		t.Errorf("Failure host config loading. 'localhost' is expected but actual is %s", cfg.Host)
