@@ -60,6 +60,10 @@ func runShow(args []string) int {
 	if showOpt.showAll {
 		opt = dbmodel.RequireAll
 	}
+	if len(args) == 0 {
+		fmt.Fprintln(o.err, "require table name as argument.")
+		return 1
+	}
 	tbl, err := db.Table(cfg.Schema, args[0], opt)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
