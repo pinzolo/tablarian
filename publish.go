@@ -47,7 +47,7 @@ func init() {
 
 // runPublish executes out command and return exit code.
 func runPublish(args []string) int {
-	cfg, err := loadConfig(showOpt.configFile)
+	cfg, err := loadConfig(publishOpt.configFile)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
