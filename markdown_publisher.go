@@ -48,10 +48,36 @@ func (p markdownPublisher) Publish(tables []*dbmodel.Table) {
 			}
 		}
 	}
+
+	idxMd := p.convertToIndexMarkdown(tables)
+	if f, err := os.Create(filepath.Join(path, "00_index.md")); err != nil {
+		p.errors = append(p.errors, err)
+	} else {
+		f.Write([]byte(idxMd))
+		err = f.Close()
+		if err != nil {
+			p.errors = append(p.errors, err)
+		}
+	}
 }
 
 func (p markdownPublisher) Errors() []error {
 	return p.errors
+}
+
+func (p markdownPublisher) convertToIndexMarkdown(tables []*dbmodel.Table) string {
+	buf := &bytes.Buffer{}
+	nl := fmt.Sprintln()
+
+	fmt.Fprintln(buf, "# Index"+nl)
+	for _, tbl := range tables {
+		if tbl.Comment() == "" {
+			fmt.Fprintf(buf, "* [%s](%s.md)%s", tbl.Name(), tbl.Name(), nl)
+		} else {
+			fmt.Fprintf(buf, "* [%s](%s.md) : %s%s", tbl.Name(), tbl.Name(), tbl.Comment(), nl)
+		}
+	}
+	return buf.String()
 }
 
 func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
