@@ -13,14 +13,14 @@ import (
 
 type markdownPublisher struct {
 	cfg    *Config
-	cnv    Converter
+	conv   Converter
 	errors []error
 }
 
 func newMarkdownPublisher(config *Config, converter Converter) markdownPublisher {
 	return markdownPublisher{
 		cfg:    config,
-		cnv:    converter,
+		conv:   converter,
 		errors: make([]error, 0, 0),
 	}
 }
@@ -37,11 +37,11 @@ func (p markdownPublisher) Publish(tables []*dbmodel.Table) {
 	}
 
 	for _, tbl := range tables {
-		md := p.convertToMarkdown(tbl)
+		md := convertToMarkdown(tbl, p.conv)
 		if f, err := os.Create(filepath.Join(path, tbl.Name()+".md")); err != nil {
 			p.errors = append(p.errors, err)
 		} else {
-			f.Write([]byte(md))
+			f.Write(md)
 			err = f.Close()
 			if err != nil {
 				p.errors = append(p.errors, err)
@@ -49,11 +49,11 @@ func (p markdownPublisher) Publish(tables []*dbmodel.Table) {
 		}
 	}
 
-	idxMd := p.convertToIndexMarkdown(tables)
+	idxMd := convertToIndexMarkdown(tables)
 	if f, err := os.Create(filepath.Join(path, "00_index.md")); err != nil {
 		p.errors = append(p.errors, err)
 	} else {
-		f.Write([]byte(idxMd))
+		f.Write(idxMd)
 		err = f.Close()
 		if err != nil {
 			p.errors = append(p.errors, err)
@@ -65,22 +65,7 @@ func (p markdownPublisher) Errors() []error {
 	return p.errors
 }
 
-func (p markdownPublisher) convertToIndexMarkdown(tables []*dbmodel.Table) string {
-	buf := &bytes.Buffer{}
-	nl := fmt.Sprintln()
-
-	fmt.Fprintln(buf, "# Index"+nl)
-	for _, tbl := range tables {
-		if tbl.Comment() == "" {
-			fmt.Fprintf(buf, "* [%s](%s.md)%s", tbl.Name(), tbl.Name(), nl)
-		} else {
-			fmt.Fprintf(buf, "* [%s](%s.md) : %s%s", tbl.Name(), tbl.Name(), tbl.Comment(), nl)
-		}
-	}
-	return buf.String()
-}
-
-func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
+func convertToMarkdown(table *dbmodel.Table, conv Converter) []byte {
 	buf := &bytes.Buffer{}
 	nl := fmt.Sprintln()
 
@@ -93,7 +78,7 @@ func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
 	w := newMdTableWriter(buf)
 	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	for _, col := range table.Columns() {
-		w.Append(p.cnv.ConvertColumn(col))
+		w.Append(conv.ConvertColumn(col))
 	}
 	w.Render()
 
@@ -102,7 +87,7 @@ func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
 		w = newMdTableWriter(buf)
 		w.SetHeader([]string{"NAME", "COLUMNS", "UNIQUE"})
 		for _, idx := range table.Indices() {
-			w.Append(p.cnv.ConvertIndex(idx))
+			w.Append(conv.ConvertIndex(idx))
 		}
 		w.Render()
 	}
@@ -112,7 +97,7 @@ func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
 		w = newMdTableWriter(buf)
 		w.SetHeader([]string{"NAME", "KIND", "CONTENT"})
 		for _, con := range table.Constraints() {
-			w.Append(p.cnv.ConvertConstraint(con))
+			w.Append(conv.ConvertConstraint(con))
 		}
 		w.Render()
 	}
@@ -122,7 +107,7 @@ func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
 		w = newMdTableWriter(buf)
 		w.SetHeader([]string{"NAME", "COLUMNS", "FOREIGN TABLE", "FOREIGN COLUMNS"})
 		for _, fk := range table.ForeignKeys() {
-			w.Append(p.cnv.ConvertForeignKey(fk))
+			w.Append(conv.ConvertForeignKey(fk))
 		}
 		w.Render()
 	}
@@ -132,12 +117,27 @@ func (p markdownPublisher) convertToMarkdown(table *dbmodel.Table) string {
 		w = newMdTableWriter(buf)
 		w.SetHeader([]string{"NAME", "SOURCE TABLE", "SOURCE COLUMNS", "COLUMNS"})
 		for _, rk := range table.ReferencedKeys() {
-			w.Append(p.cnv.ConvertReferencedKey(rk))
+			w.Append(conv.ConvertReferencedKey(rk))
 		}
 		w.Render()
 	}
 
-	return buf.String()
+	return buf.Bytes()
+}
+
+func convertToIndexMarkdown(tables []*dbmodel.Table) []byte {
+	buf := &bytes.Buffer{}
+	nl := fmt.Sprintln()
+
+	fmt.Fprintln(buf, "# Index"+nl)
+	for _, tbl := range tables {
+		if tbl.Comment() == "" {
+			fmt.Fprintf(buf, "* [%s](%s.md)%s", tbl.Name(), tbl.Name(), nl)
+		} else {
+			fmt.Fprintf(buf, "* [%s](%s.md) : %s%s", tbl.Name(), tbl.Name(), tbl.Comment(), nl)
+		}
+	}
+	return buf.Bytes()
 }
 
 func newMdTableWriter(w io.Writer) *tablewriter.Table {
@@ -149,6 +149,7 @@ func newMdTableWriter(w io.Writer) *tablewriter.Table {
 }
 
 func cleanDir(path string) error {
+	// TODO: check dir exists
 	if err := os.RemoveAll(path); err != nil {
 		return err
 	}
