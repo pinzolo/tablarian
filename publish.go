@@ -15,13 +15,13 @@ var (
 	cmdPublish = &Command{
 		Run:       runPublish,
 		UsageLine: "publish ",
-		Short:     "Output table definition(s) to file.",
-		Long: `Output table definitions(s) to file.
+		Short:     "Output definition of tables to file.",
+		Long: `Output definition of tables to file.
 
 Options:
-    -c 'config gile', --config 'config file'
+    -c CONGIG_FILE, --config CONFIG_FILE
         use config file instead of default config file(tablarian.config)
-        if 'config file' starts with '@', it is treated as absolute file path.
+        if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -p, --pretty
         convert data type to usually name.

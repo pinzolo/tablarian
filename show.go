@@ -16,13 +16,13 @@ var (
 	cmdShow = &Command{
 		Run:       runShow,
 		UsageLine: "show [-c] table_name",
-		Short:     "Print a table definition.(Console only)",
+		Short:     "Print table definition to console.",
 		Long: `Print table definition to console.
 
 Options:
-    -c 'config gile', --config 'config file'
+    -c CONGIG_FILE, --config CONFIG_FILE
         use config file instead of default config file(tablarian.config)
-        if 'config file' starts with '@', it is treated as absolute file path.
+        if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -a, --all
         show all metadata of table.(indices, foreign keys, referenced keys, constraints)
