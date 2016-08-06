@@ -63,7 +63,11 @@ func runPublish(args []string) int {
 		return 1
 	}
 	conv := findConverter(publishOpt.prettyPrint, cfg.Driver)
-	pub := findPublisher(publishOpt.format, cfg, conv)
+	pub, err := findPublisher(publishOpt.format, cfg, conv)
+	if err != nil {
+		fmt.Fprintln(o.err, err)
+		return 1
+	}
 	pub.Publish(tables)
 	if len(pub.Errors()) > 0 {
 		for _, err = range pub.Errors() {

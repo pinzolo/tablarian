@@ -1,16 +1,21 @@
 package main
 
-import "github.com/pinzolo/dbmodel"
+import (
+	"fmt"
 
+	"github.com/pinzolo/dbmodel"
+)
+
+// Publisher is interface for saving table definition.
 type Publisher interface {
 	Publish([]*dbmodel.Table)
 	Errors() []error
 }
 
-func findPublisher(format string, config *Config, converter Converter) Publisher {
+func findPublisher(format string, config *Config, converter Converter) (Publisher, error) {
 	if format == "markdown" {
-		return newMarkdownPublisher(config, converter)
+		return newMarkdownPublisher(config, converter), nil
 	}
 
-	return newMarkdownPublisher(config, converter)
+	return nil, fmt.Errorf("Format '%s' is invalid format.", format)
 }

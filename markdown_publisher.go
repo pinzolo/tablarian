@@ -130,13 +130,13 @@ func convertToIndexMarkdown(tables []*dbmodel.Table) []byte {
 	nl := fmt.Sprintln()
 
 	fmt.Fprintln(buf, "# Index"+nl)
+	w := newMdTableWriter(buf)
+	w.SetHeader([]string{"TABLE", "COMMENT"})
 	for _, tbl := range tables {
-		if tbl.Comment() == "" {
-			fmt.Fprintf(buf, "* [%s](%s.md)%s", tbl.Name(), tbl.Name(), nl)
-		} else {
-			fmt.Fprintf(buf, "* [%s](%s.md) : %s%s", tbl.Name(), tbl.Name(), tbl.Comment(), nl)
-		}
+		w.Append([]string{fmt.Sprintf("[%s](%s.md)", tbl.Name(), tbl.Name()), tbl.Comment()})
 	}
+	w.Render()
+
 	return buf.Bytes()
 }
 
@@ -149,9 +149,15 @@ func newMdTableWriter(w io.Writer) *tablewriter.Table {
 }
 
 func cleanDir(path string) error {
-	// TODO: check dir exists
-	if err := os.RemoveAll(path); err != nil {
-		return err
+	fi, err := os.Stat(path)
+	if err == nil {
+		if fi.IsDir() {
+			if err := os.RemoveAll(path); err != nil {
+				return err
+			}
+		} else {
+			return fmt.Errorf("Path: %s is file.", path)
+		}
 	}
 	if err := os.MkdirAll(path, 0777); err != nil {
 		return err
