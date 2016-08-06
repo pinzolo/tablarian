@@ -22,7 +22,7 @@ func TestFindConverterWhenPrettyPostgres(t *testing.T) {
 }
 
 func TestFindConverterWhenUnknownDriver(t *testing.T) {
-	conv := findConverter(false, "unknown")
+	conv := findConverter(true, "unknown")
 	if _, ok := conv.(defaultConverter); !ok {
 		t.Error("If driver is unknows, findConverter should return defaultConverter.")
 	}
