@@ -10,30 +10,35 @@ import (
 	"testing"
 )
 
-var salesTblNames = []string{
-	"country_region_currency",
-	"credit_card",
-	"currency",
-	"currency_rate",
-	"customer",
-	"person_credit_card",
-	"sales_order_detail",
-	"sales_order_header",
-	"sales_order_header_sales_reason",
-	"sales_person",
-	"sales_person_quota_history",
-	"sales_reason",
-	"sales_tax_rate",
-	"sales_territory",
-	"sales_territory_history",
-	"shopping_cart_item",
-	"special_offer",
-	"special_offer_product",
-	"store",
-}
+var (
+	salesTblNames = []string{
+		"country_region_currency",
+		"credit_card",
+		"currency",
+		"currency_rate",
+		"customer",
+		"person_credit_card",
+		"sales_order_detail",
+		"sales_order_header",
+		"sales_order_header_sales_reason",
+		"sales_person",
+		"sales_person_quota_history",
+		"sales_reason",
+		"sales_tax_rate",
+		"sales_territory",
+		"sales_territory_history",
+		"shopping_cart_item",
+		"special_offer",
+		"special_offer_product",
+		"store",
+	}
+)
 
 func TestCmdPublishDefault(t *testing.T) {
-	initPublishOpt()
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
@@ -73,7 +78,10 @@ func TestCmdPublishDefault(t *testing.T) {
 }
 
 func TestCmdPublishMarkdownPostgresPretty(t *testing.T) {
-	initPublishOpt()
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.out = buf
 	publishOpt.prettyPrint = true
@@ -113,8 +121,11 @@ func TestCmdPublishMarkdownPostgresPretty(t *testing.T) {
 	}
 }
 
-func TestCmdPublishMarkdownWhenOutDirNotExists(t *testing.T) {
-	initPublishOpt()
+func TestCmdPublishMarkdownWhenOutDirExists(t *testing.T) {
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
@@ -123,13 +134,9 @@ func TestCmdPublishMarkdownWhenOutDirNotExists(t *testing.T) {
 		t.Error("Output path should be able to resolve.")
 		return
 	}
-
-	if fi, err := os.Stat(path); err == nil && fi.IsDir() {
-		err = os.RemoveAll(path)
-		if err != nil {
-			t.Error("Output directory cannot remove.")
-			return
-		}
+	if err = os.Mkdir(path, 0777); err != nil {
+		t.Error("Fialure create output dir")
+		return
 	}
 
 	stat := cmdPublish.Run([]string{})
@@ -156,7 +163,10 @@ func TestCmdPublishMarkdownWhenOutDirNotExists(t *testing.T) {
 }
 
 func TestCmdPublishMarkdownOutDirCleaning(t *testing.T) {
-	initPublishOpt()
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.out = buf
 	setupTestConfigFile("tablarian-aw")
@@ -164,6 +174,12 @@ func TestCmdPublishMarkdownOutDirCleaning(t *testing.T) {
 	if err != nil {
 		t.Error("Output path should be able to resolve.")
 		return
+	}
+	if _, err = os.Stat(path); err != nil {
+		if err = os.Mkdir(path, 0777); err != nil {
+			t.Error("Fialure create output dir")
+			return
+		}
 	}
 	_, err = os.Create(filepath.Join(path, "unconcerned.md"))
 	if err != nil {
@@ -207,7 +223,10 @@ func TestCmdPublishMarkdownOutDirCleaning(t *testing.T) {
 }
 
 func TestCmdPublishWithInvalidJson(t *testing.T) {
-	initPublishOpt()
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.err = buf
 	setupTestConfigFile("invalid-json")
@@ -221,7 +240,10 @@ func TestCmdPublishWithInvalidJson(t *testing.T) {
 }
 
 func TestCmdPublishWithDbError(t *testing.T) {
-	initPublishOpt()
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.err = buf
 	setupTestConfigFile("db-error")
@@ -235,7 +257,10 @@ func TestCmdPublishWithDbError(t *testing.T) {
 }
 
 func TestCmdPublishWithInvalidFormat(t *testing.T) {
-	initPublishOpt()
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
 	buf := &bytes.Buffer{}
 	o.err = buf
 	setupTestConfigFile("tablarian-aw")
@@ -247,6 +272,21 @@ func TestCmdPublishWithInvalidFormat(t *testing.T) {
 	if actual, expected := strings.TrimSpace(buf.String()), "Format 'invalid' is invalid format."; actual != expected {
 		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
 	}
+}
+
+func initPublishMarkdownTest() error {
+	initPublishOpt()
+
+	path, err := resolvePath("out")
+	if err != nil {
+		return err
+	}
+	if fi, err := os.Stat(path); err == nil && fi.IsDir() {
+		if err = os.RemoveAll(path); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func initPublishOpt() {
