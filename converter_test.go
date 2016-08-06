@@ -7,6 +7,20 @@ import (
 	"github.com/pinzolo/dbmodel"
 )
 
+func TestFindConverterWhenNoPretty(t *testing.T) {
+	conv := findConverter(false, "postgres")
+	if _, ok := conv.(defaultConverter); !ok {
+		t.Error("If pretty is false, findConverter should return defaultConverter.")
+	}
+}
+
+func TestFindConverterWhenPrettyPostgres(t *testing.T) {
+	conv := findConverter(true, "postgres")
+	if _, ok := conv.(postgresPrettyConverter); !ok {
+		t.Error("If pretty is true and driver is 'postgres', findConverter should return postgresPrettyConverter.")
+	}
+}
+
 func TestDefaultConvertColumn(t *testing.T) {
 	conv := defaultConverter{}
 	size := dbmodel.NewSize(

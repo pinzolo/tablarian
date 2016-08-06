@@ -16,13 +16,13 @@ var (
 	cmdShow = &Command{
 		Run:       runShow,
 		UsageLine: "show [-c] table_name",
-		Short:     "Print a table definition.(Console only)",
+		Short:     "Print table definition to console.",
 		Long: `Print table definition to console.
 
 Options:
-    -c 'config gile', --config 'config file'
+    -c CONGIG_FILE, --config CONFIG_FILE
         use config file instead of default config file(tablarian.config)
-        if 'config file' starts with '@', it is treated as absolute file path.
+        if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -a, --all
         show all metadata of table.(indices, foreign keys, referenced keys, constraints)
@@ -60,29 +60,30 @@ func runShow(args []string) int {
 	if showOpt.showAll {
 		opt = dbmodel.RequireAll
 	}
+	if len(args) == 0 {
+		fmt.Fprintln(o.err, "require table name as argument.")
+		return 1
+	}
 	tbl, err := db.Table(cfg.Schema, args[0], opt)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
 	}
 
-	conv = defaultConverter{}
-	if showOpt.prettyPrint && cfg.Driver == "postgres" {
-		conv = postgresPrettyConverter{}
-	}
-	printTable(tbl)
+	conv := findConverter(showOpt.prettyPrint, cfg.Driver)
+	printTable(tbl, conv)
 	return 0
 }
 
-func printTable(tbl *dbmodel.Table) {
-	printColumns(tbl.Columns())
-	printIndices(tbl.Indices())
-	printConstraints(tbl.Constraints())
-	printForeignKeys(tbl.ForeignKeys())
-	printReferencedKyes(tbl.ReferencedKeys())
+func printTable(tbl *dbmodel.Table, conv Converter) {
+	printColumns(tbl.Columns(), conv)
+	printIndices(tbl.Indices(), conv)
+	printConstraints(tbl.Constraints(), conv)
+	printForeignKeys(tbl.ForeignKeys(), conv)
+	printReferencedKyes(tbl.ReferencedKeys(), conv)
 }
 
-func printColumns(cols []*dbmodel.Column) {
+func printColumns(cols []*dbmodel.Column, conv Converter) {
 	w := tablewriter.NewWriter(o.out)
 	w.SetHeader([]string{"PK", "NAME", "TYPE", "SIZE", "NULL", "DEFAULT", "COMMENT"})
 	w.SetAutoWrapText(false)
@@ -92,7 +93,7 @@ func printColumns(cols []*dbmodel.Column) {
 	w.Render()
 }
 
-func printIndices(idxs []*dbmodel.Index) {
+func printIndices(idxs []*dbmodel.Index, conv Converter) {
 	if len(idxs) == 0 {
 		return
 	}
@@ -107,7 +108,7 @@ func printIndices(idxs []*dbmodel.Index) {
 	w.Render()
 }
 
-func printConstraints(cons []*dbmodel.Constraint) {
+func printConstraints(cons []*dbmodel.Constraint, conv Converter) {
 	if len(cons) == 0 {
 		return
 	}
@@ -122,7 +123,7 @@ func printConstraints(cons []*dbmodel.Constraint) {
 	w.Render()
 }
 
-func printForeignKeys(fks []*dbmodel.ForeignKey) {
+func printForeignKeys(fks []*dbmodel.ForeignKey, conv Converter) {
 	if len(fks) == 0 {
 		return
 	}
@@ -137,7 +138,7 @@ func printForeignKeys(fks []*dbmodel.ForeignKey) {
 	w.Render()
 }
 
-func printReferencedKyes(rks []*dbmodel.ForeignKey) {
+func printReferencedKyes(rks []*dbmodel.ForeignKey, conv Converter) {
 	if len(rks) == 0 {
 		return
 	}

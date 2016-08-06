@@ -18,13 +18,13 @@ var (
 	cmdIndex = &Command{
 		Run:       runIndex,
 		UsageLine: "index ",
-		Short:     "Enumerate all table names in schema.",
-		Long: `Enumerate table names in schema.
+		Short:     "Print table names to console.",
+		Long: `Print table names to console.
 
 Options:
-    -c 'config gile', --config 'config file'
+    -c CONGIG_FILE, --config CONFIG_FILE
         use config file instead of default config file(tablarian.config)
-        if 'config file' starts with '@', it is treated as absolute file path.
+        if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -C, --no-comment
         Not print table comment. (default: false)

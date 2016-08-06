@@ -16,6 +16,18 @@ type Converter interface {
 	ConvertReferencedKey(*dbmodel.ForeignKey) []string
 }
 
+func findConverter(pretty bool, driver string) Converter {
+	if !pretty {
+		return defaultConverter{}
+	}
+
+	if driver == "postgres" {
+		return postgresPrettyConverter{}
+	}
+
+	return defaultConverter{}
+}
+
 type defaultConverter struct{}
 
 func (dc defaultConverter) ConvertColumn(c *dbmodel.Column) []string {

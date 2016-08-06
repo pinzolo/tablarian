@@ -145,7 +145,7 @@ func TestCmdShowWithInvalidJson(t *testing.T) {
 	args := []string{"sales_person"}
 	stat := cmdShow.Run(args)
 	if stat == 0 {
-		t.Error("Show command should not finish normally on invalid schema.")
+		t.Error("Show command should not finish normally on invalid json.")
 	}
 	if actual, expected := strings.TrimSpace(buf.String()), "unexpected end of JSON input"; actual != expected {
 		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
@@ -163,6 +163,21 @@ func TestCmdShowWithDbError(t *testing.T) {
 		t.Error("Show command should not finish normally on invalid schema.")
 	}
 	if actual, expected := strings.TrimSpace(buf.String()), `pq: role "foobar" does not exist`; actual != expected {
+		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
+	}
+}
+
+func TestCmdShowWithoutTableName(t *testing.T) {
+	initShowOpt()
+	buf := &bytes.Buffer{}
+	o.err = buf
+	setupTestConfigFile("tablarian-aw")
+	args := []string{}
+	stat := cmdShow.Run(args)
+	if stat == 0 {
+		t.Error("Show command should not finish normally without table name argument.")
+	}
+	if actual, expected := strings.TrimSpace(buf.String()), "require table name as argument."; actual != expected {
 		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
 	}
 }
