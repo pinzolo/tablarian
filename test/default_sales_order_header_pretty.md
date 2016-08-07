@@ -38,7 +38,7 @@ General sales order information.
 |--------------------------------------|----------------|--------|
 | pk_sales_order_header_sales_order_id | sales_order_id | YES    |
 
-## Constants
+## Constraints
 
 |              NAME               | KIND  |                      CONTENT                       |
 |---------------------------------|-------|----------------------------------------------------|

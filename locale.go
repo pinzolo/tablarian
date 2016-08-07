@@ -7,6 +7,11 @@ type locale struct {
 var (
 	en = locale{
 		dict: map[string]map[string]string{
+			"table_list": map[string]string{
+				"title":   "Table index",
+				"table":   "TABLE",
+				"comment": "COMMENT",
+			},
 			"column": map[string]string{
 				"title":         "Columns",
 				"primary_key":   "PK",
@@ -37,16 +42,21 @@ var (
 				"foreign_columns": "FOREIGN COLUMNS",
 			},
 			"referenced_key": map[string]string{
-				"title":           "Referenced keys",
-				"name":            "NAME",
-				"source_table":    "SOURCE TABLE",
-				"'source_columns": "SOURCE COLUMNS",
-				"columns":         "COLUMNS",
+				"title":          "Referenced keys",
+				"name":           "NAME",
+				"source_table":   "SOURCE TABLE",
+				"source_columns": "SOURCE COLUMNS",
+				"columns":        "COLUMNS",
 			},
 		},
 	}
 	ja = locale{
 		dict: map[string]map[string]string{
+			"table_list": map[string]string{
+				"title":   "テーブル一覧",
+				"table":   "テーブル",
+				"comment": "コメント",
+			},
 			"column": map[string]string{
 				"title":         "列一覧",
 				"primary_key":   "PK",
@@ -77,11 +87,11 @@ var (
 				"foreign_columns": "参照列",
 			},
 			"referenced_key": map[string]string{
-				"title":           "被参照キー",
-				"name":            "参照名",
-				"source_table":    "参照元テーブル",
-				"'source_columns": "参照元列",
-				"columns":         "被参照列",
+				"title":          "被参照キー",
+				"name":           "参照名",
+				"source_table":   "参照元テーブル",
+				"source_columns": "参照元列",
+				"columns":        "被参照列",
 			},
 		},
 	}

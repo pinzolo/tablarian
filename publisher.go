@@ -12,9 +12,9 @@ type Publisher interface {
 	Errors() []error
 }
 
-func findPublisher(format string, config *Config, converter Converter) (Publisher, error) {
+func findPublisher(format string, config *Config, converter Converter, locale locale) (Publisher, error) {
 	if format == "markdown" {
-		return newMarkdownPublisher(config, converter), nil
+		return newMarkdownPublisher(config, converter, locale), nil
 	}
 
 	return nil, fmt.Errorf("Format '%s' is invalid format.", format)

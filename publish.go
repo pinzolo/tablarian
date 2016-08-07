@@ -9,6 +9,7 @@ import (
 type publishOption struct {
 	baseOption
 	format string
+	locale string
 }
 
 var (
@@ -31,6 +32,10 @@ Options:
         file format for saving table definitions.
         formats:
             markdown (default)
+
+    -l LOCALE, --locale LOCALE
+        use LOCALE instead of default locale(en).
+        currently acceptable locales are 'en', 'ja'.
 	`,
 	}
 	publishOpt = publishOption{}
@@ -43,6 +48,8 @@ func init() {
 	cmdPublish.Flag.BoolVar(&publishOpt.prettyPrint, "p", false, "Pretty print")
 	cmdPublish.Flag.StringVar(&publishOpt.format, "format", "markdown", "File format")
 	cmdPublish.Flag.StringVar(&publishOpt.format, "f", "markdown", "File format")
+	cmdPublish.Flag.StringVar(&publishOpt.locale, "locale", "en", "Locale")
+	cmdPublish.Flag.StringVar(&publishOpt.locale, "l", "en", "Locale")
 }
 
 // runPublish executes out command and return exit code.
@@ -63,7 +70,7 @@ func runPublish(args []string) int {
 		return 1
 	}
 	conv := findConverter(publishOpt.prettyPrint, cfg.Driver)
-	pub, err := findPublisher(publishOpt.format, cfg, conv)
+	pub, err := findPublisher(publishOpt.format, cfg, conv, l(publishOpt.locale))
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/md5"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -77,6 +78,50 @@ func TestCmdPublishDefault(t *testing.T) {
 	}
 }
 
+func TestCmdPublishLocaleJa(t *testing.T) {
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
+	buf := &bytes.Buffer{}
+	o.out = buf
+	publishOpt.locale = "ja"
+	setupTestConfigFile("tablarian-aw")
+	stat := cmdPublish.Run([]string{})
+	if stat != 0 {
+		t.Error("Publish subcommand should finish normally.")
+	}
+
+	path, err := resolvePath("out")
+	if err != nil {
+		t.Error("Output path should be able to resolve.")
+	}
+	if fi, err := os.Stat(path); err != nil || !fi.IsDir() {
+		t.Error("Publish subcommand should make output directory.")
+	}
+
+	idxPath := filepath.Join(path, "00_index.md")
+	_, err = os.Stat(idxPath)
+	if err != nil {
+		t.Error("Default publish subcommand should make index file.")
+	}
+
+	if !isSameFile(idxPath, "sales_00_index_ja.md") {
+		t.Error("Index file content is not expected.")
+	}
+
+	for _, n := range salesTblNames {
+		_, err = os.Stat(filepath.Join(path, n+".md"))
+		if err != nil {
+			t.Errorf("Default publish subcommand should make %s.", n+".md")
+		}
+	}
+
+	if !isSameFile(filepath.Join(path, "sales_order_header.md"), "default_sales_order_header_ja.md") {
+		t.Errorf("File: %v content is not expected.", "sales_order_header.md")
+	}
+}
+
 func TestCmdPublishMarkdownPostgresPretty(t *testing.T) {
 	if err := initPublishMarkdownTest(); err != nil {
 		t.Error("Failure test initialization.")
@@ -117,6 +162,51 @@ func TestCmdPublishMarkdownPostgresPretty(t *testing.T) {
 	}
 
 	if !isSameFile(filepath.Join(path, "sales_order_header.md"), "default_sales_order_header_pretty.md") {
+		t.Errorf("File: %v content is not expected.", "sales_order_header.md")
+	}
+}
+
+func TestCmdPublishMarkdownPostgresPrettyJa(t *testing.T) {
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
+	buf := &bytes.Buffer{}
+	o.out = buf
+	publishOpt.prettyPrint = true
+	publishOpt.locale = "ja"
+	setupTestConfigFile("tablarian-aw")
+	stat := cmdPublish.Run([]string{})
+	if stat != 0 {
+		t.Error("Publish subcommand should finish normally.")
+	}
+
+	path, err := resolvePath("out")
+	if err != nil {
+		t.Error("Output path should be able to resolve.")
+	}
+	if fi, err := os.Stat(path); err != nil || !fi.IsDir() {
+		t.Error("Publish subcommand should make output directory.")
+	}
+
+	idxPath := filepath.Join(path, "00_index.md")
+	_, err = os.Stat(idxPath)
+	if err != nil {
+		t.Error("Default publish subcommand should make index file.")
+	}
+
+	if !isSameFile(idxPath, "sales_00_index_ja.md") {
+		t.Error("Index file content is not expected.")
+	}
+
+	for _, n := range salesTblNames {
+		_, err = os.Stat(filepath.Join(path, n+".md"))
+		if err != nil {
+			t.Errorf("Default publish subcommand should make %s.", n+".md")
+		}
+	}
+
+	if !isSameFile(filepath.Join(path, "sales_order_header.md"), "default_sales_order_header_pretty_ja.md") {
 		t.Errorf("File: %v content is not expected.", "sales_order_header.md")
 	}
 }
@@ -293,6 +383,7 @@ func initPublishOpt() {
 	publishOpt.configFile = "tablarian.config"
 	publishOpt.prettyPrint = false
 	publishOpt.format = "markdown"
+	publishOpt.locale = "en"
 }
 
 func isSameFile(path string, testFile string) bool {
@@ -307,6 +398,9 @@ func isSameFile(path string, testFile string) bool {
 	cs2, err := ioutil.ReadFile(filepath.Join(wd, "test", testFile))
 	if err != nil {
 		return false
+	}
+	if md5.Sum(cs1) != md5.Sum(cs2) {
+		fmt.Printf("cs1: %s\ncs2: %s", cs1, cs2)
 	}
 	return md5.Sum(cs1) == md5.Sum(cs2)
 }
