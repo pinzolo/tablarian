@@ -1,6 +1,6 @@
-# Table index
+# テーブル一覧
 
-|                                 TABLE                                 |                                             COMMENT                                             |
+|                               テーブル                                |                                            コメント                                             |
 |-----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | [country_region_currency](country_region_currency.md)                 |                                                                                                 |
 | [credit_card](credit_card.md)                                         | Customer credit card information.                                                               |
