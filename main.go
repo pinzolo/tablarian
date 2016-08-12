@@ -69,6 +69,7 @@ var commands = []*Command{
 	cmdShow,
 	cmdPublish,
 	cmdIndex,
+	cmdInit,
 }
 
 func main() {
