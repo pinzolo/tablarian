@@ -9,7 +9,7 @@ import (
 
 var cmdInit = &Command{
 	Run:       runInit,
-	UsageLine: "version ",
+	UsageLine: "init ",
 	Short:     "Create config file template.",
 	Long: `Create config template as 'tablarian.config' to working directory.
 Argument is your database sysytem driver name. (current acceptable 'postgres' only.)
