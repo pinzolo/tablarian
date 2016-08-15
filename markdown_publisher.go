@@ -157,7 +157,7 @@ func cleanDir(path string) error {
 			return fmt.Errorf("Path: %s is file.", path)
 		}
 	}
-	if err := os.MkdirAll(path, 0777); err != nil {
+	if err := os.MkdirAll(path, 0755); err != nil {
 		return err
 	}
 	return nil
