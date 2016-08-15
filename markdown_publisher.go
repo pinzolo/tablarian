@@ -40,27 +40,13 @@ func (p markdownPublisher) Publish(tables []*dbmodel.Table) {
 
 	for _, tbl := range tables {
 		md := convertToMarkdown(tbl, p.conv, p.loc)
-		if f, err := os.Create(filepath.Join(path, tbl.Name()+".md")); err != nil {
-			p.errors = append(p.errors, err)
-		} else {
-			f.Write(md)
-			err = f.Close()
-			if err != nil {
-				p.errors = append(p.errors, err)
-			}
-		}
+		err = writeToFile(filepath.Join(path, tbl.Name()+".md"), md)
+		p.errors = append(p.errors, err)
 	}
 
 	idxMd := convertToIndexMarkdown(tables, p.loc)
-	if f, err := os.Create(filepath.Join(path, "00_index.md")); err != nil {
-		p.errors = append(p.errors, err)
-	} else {
-		f.Write(idxMd)
-		err = f.Close()
-		if err != nil {
-			p.errors = append(p.errors, err)
-		}
-	}
+	err = writeToFile(filepath.Join(path, "00_index.md"), idxMd)
+	p.errors = append(p.errors, err)
 }
 
 func (p markdownPublisher) Errors() []error {
@@ -80,7 +66,7 @@ func convertToMarkdown(table *dbmodel.Table, conv Converter, loc locale) []byte 
 	fmt.Fprintln(buf, "##", loc.t("column", "title"))
 	fmt.Fprintln(buf)
 	w := newMdTableWriter(buf)
-	w.SetHeader(tHeaders(loc, "column", "primary_key", "name", "data_type", "size", "null", "default_value", "comment"))
+	w.SetHeader(translateHeaders(loc, "column", "primary_key", "name", "data_type", "size", "null", "default_value", "comment"))
 	for _, col := range table.Columns() {
 		w.Append(conv.ConvertColumn(col))
 	}
@@ -91,7 +77,7 @@ func convertToMarkdown(table *dbmodel.Table, conv Converter, loc locale) []byte 
 		fmt.Fprintln(buf, "##", loc.t("index", "title"))
 		fmt.Fprintln(buf)
 		w = newMdTableWriter(buf)
-		w.SetHeader(tHeaders(loc, "index", "name", "columns", "unique"))
+		w.SetHeader(translateHeaders(loc, "index", "name", "columns", "unique"))
 		for _, idx := range table.Indices() {
 			w.Append(conv.ConvertIndex(idx))
 		}
@@ -103,7 +89,7 @@ func convertToMarkdown(table *dbmodel.Table, conv Converter, loc locale) []byte 
 		fmt.Fprintln(buf, "##", loc.t("constraint", "title"))
 		fmt.Fprintln(buf)
 		w = newMdTableWriter(buf)
-		w.SetHeader(tHeaders(loc, "constraint", "name", "kind", "content"))
+		w.SetHeader(translateHeaders(loc, "constraint", "name", "kind", "content"))
 		for _, con := range table.Constraints() {
 			w.Append(conv.ConvertConstraint(con))
 		}
@@ -115,7 +101,7 @@ func convertToMarkdown(table *dbmodel.Table, conv Converter, loc locale) []byte 
 		fmt.Fprintln(buf, "##", loc.t("foreign_key", "title"))
 		fmt.Fprintln(buf)
 		w = newMdTableWriter(buf)
-		w.SetHeader(tHeaders(loc, "foreign_key", "name", "columns", "foreign_table", "foreign_columns"))
+		w.SetHeader(translateHeaders(loc, "foreign_key", "name", "columns", "foreign_table", "foreign_columns"))
 		for _, fk := range table.ForeignKeys() {
 			w.Append(conv.ConvertForeignKey(fk))
 		}
@@ -127,7 +113,7 @@ func convertToMarkdown(table *dbmodel.Table, conv Converter, loc locale) []byte 
 		fmt.Fprintln(buf, "##", loc.t("referenced_key", "title"))
 		fmt.Fprintln(buf)
 		w = newMdTableWriter(buf)
-		w.SetHeader(tHeaders(loc, "referenced_key", "name", "source_table", "source_columns", "columns"))
+		w.SetHeader(translateHeaders(loc, "referenced_key", "name", "source_table", "source_columns", "columns"))
 		for _, rk := range table.ReferencedKeys() {
 			w.Append(conv.ConvertReferencedKey(rk))
 		}
@@ -143,7 +129,7 @@ func convertToIndexMarkdown(tables []*dbmodel.Table, loc locale) []byte {
 	fmt.Fprintln(buf, "#", loc.t("table_list", "title"))
 	fmt.Fprintln(buf)
 	w := newMdTableWriter(buf)
-	w.SetHeader(tHeaders(loc, "table_list", "table", "comment"))
+	w.SetHeader(translateHeaders(loc, "table_list", "table", "comment"))
 	for _, tbl := range tables {
 		w.Append([]string{fmt.Sprintf("[%s](%s.md)", tbl.Name(), tbl.Name()), tbl.Comment()})
 	}
@@ -177,10 +163,21 @@ func cleanDir(path string) error {
 	return nil
 }
 
-func tHeaders(loc locale, cat string, keys ...string) []string {
+func translateHeaders(loc locale, cat string, keys ...string) []string {
 	hs := make([]string, 0, len(keys))
 	for _, key := range keys {
 		hs = append(hs, loc.t(cat, key))
 	}
 	return hs
+}
+
+func writeToFile(path string, content []byte) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = f.Write(content)
+	return err
 }
