@@ -312,6 +312,34 @@ func TestCmdPublishMarkdownOutDirCleaning(t *testing.T) {
 	}
 }
 
+func TestCmdPublishVerbose(t *testing.T) {
+	if err := initPublishMarkdownTest(); err != nil {
+		t.Error("Failure test initialization.")
+		return
+	}
+	buf := &bytes.Buffer{}
+	o.out = buf
+	setupTestConfigFile("tablarian-aw")
+	publishOpt.verbose = true
+	path, err := resolvePath("out")
+	if err != nil {
+		t.Error("Output path should be able to resolve.")
+		return
+	}
+	stat := cmdPublish.Run([]string{})
+	if stat != 0 {
+		t.Error("Publish subcommand should finish normally.")
+	}
+	exBuf := &bytes.Buffer{}
+	for _, n := range salesTblNames {
+		fmt.Fprintln(exBuf, fmt.Sprintf("Created: %s", filepath.Join(path, n+".md")))
+	}
+	fmt.Fprintln(exBuf, fmt.Sprintf("Created: %s", filepath.Join(path, "00_index.md")))
+	if actual, expected := strings.TrimSpace(buf.String()), strings.TrimSpace(exBuf.String()); actual != expected {
+		t.Errorf("Printed log is not exepected. actual: %v, expected: %v", actual, expected)
+	}
+}
+
 func TestCmdPublishWithInvalidJson(t *testing.T) {
 	if err := initPublishMarkdownTest(); err != nil {
 		t.Error("Failure test initialization.")
@@ -384,6 +412,7 @@ func initPublishOpt() {
 	publishOpt.prettyPrint = false
 	publishOpt.format = "markdown"
 	publishOpt.locale = "en"
+	publishOpt.verbose = false
 }
 
 func isSameFile(path string, testFile string) bool {

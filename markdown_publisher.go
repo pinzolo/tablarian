@@ -15,14 +15,16 @@ type markdownPublisher struct {
 	cfg    *Config
 	conv   Converter
 	loc    locale
+	logger io.Writer
 	errors []error
 }
 
-func newMarkdownPublisher(config *Config, converter Converter, locale locale) markdownPublisher {
+func newMarkdownPublisher(config *Config, converter Converter, locale locale, logger io.Writer) markdownPublisher {
 	return markdownPublisher{
 		cfg:    config,
 		conv:   converter,
 		loc:    locale,
+		logger: logger,
 		errors: make([]error, 0, 0),
 	}
 }
@@ -40,13 +42,23 @@ func (p markdownPublisher) Publish(tables []*dbmodel.Table) {
 
 	for _, tbl := range tables {
 		md := convertToMarkdown(tbl, p.conv, p.loc)
-		err = writeToFile(filepath.Join(path, tbl.Name()+".md"), md)
-		p.errors = append(p.errors, err)
+		fPath := filepath.Join(path, tbl.Name()+".md")
+		err = writeToFile(fPath, md)
+		if err == nil {
+			p.writeCreatedLog(fPath)
+		} else {
+			p.errors = append(p.errors, err)
+		}
 	}
 
 	idxMd := convertToIndexMarkdown(tables, p.loc)
-	err = writeToFile(filepath.Join(path, "00_index.md"), idxMd)
-	p.errors = append(p.errors, err)
+	idxPath := filepath.Join(path, "00_index.md")
+	err = writeToFile(idxPath, idxMd)
+	if err == nil {
+		p.writeCreatedLog(idxPath)
+	} else {
+		p.errors = append(p.errors, err)
+	}
 }
 
 func (p markdownPublisher) Errors() []error {
@@ -180,4 +192,10 @@ func writeToFile(path string, content []byte) error {
 
 	_, err = f.Write(content)
 	return err
+}
+
+func (p markdownPublisher) writeCreatedLog(path string) {
+	if p.logger != nil {
+		fmt.Fprintln(p.logger, "Created:", path)
+	}
 }

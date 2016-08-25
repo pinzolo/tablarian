@@ -40,7 +40,7 @@ func runInit(args []string) int {
 		return 1
 	}
 
-	fmt.Println("Config file template is created as 'tablarian.config'.")
+	fmt.Fprintln(o.out, "Config file template is created as 'tablarian.config'.")
 	return 0
 }
 
