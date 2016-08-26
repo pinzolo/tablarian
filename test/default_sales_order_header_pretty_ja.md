@@ -32,7 +32,7 @@ General sales order information.
 |    | rowguid                   | uuid                 |        | NO   | uuid_generate_v1() |                                                                                                               |
 |    | modified_date             | timestamp            |      6 | NO   | now()              |                                                                                                               |
 
-## インデックス名
+## インデックス
 
 |                 名前                 |       列       | ユニーク |
 |--------------------------------------|----------------|----------|
