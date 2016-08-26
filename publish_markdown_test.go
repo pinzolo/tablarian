@@ -408,7 +408,7 @@ func initPublishMarkdownTest() error {
 }
 
 func initPublishOpt() {
-	publishOpt.configFile = "tablarian.config"
+	publishOpt.configFile = DefaultConfigFileName
 	publishOpt.prettyPrint = false
 	publishOpt.format = "markdown"
 	publishOpt.locale = "en"

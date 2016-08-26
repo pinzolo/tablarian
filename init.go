@@ -11,7 +11,7 @@ var cmdInit = &Command{
 	Run:       runInit,
 	UsageLine: "init ",
 	Short:     "Create config file template.",
-	Long: `Create config template as 'tablarian.config' to working directory.
+	Long: `Create config template as '.tablarian.config' to working directory.
 Argument is your database sysytem driver name. (current acceptable 'postgres' only.)
 	`,
 }
@@ -40,7 +40,7 @@ func runInit(args []string) int {
 		return 1
 	}
 
-	fmt.Fprintln(o.out, "Config file template is created as 'tablarian.config'.")
+	fmt.Fprintln(o.out, "Config file template is created as '.tablarian.config'.")
 	return 0
 }
 
@@ -74,9 +74,9 @@ func writeConfigContent(cfg string) error {
 		return err
 	}
 
-	path := filepath.Join(wd, "tablarian.config")
+	path := filepath.Join(wd, DefaultConfigFileName)
 	if _, err = os.Stat(path); err == nil {
-		return errors.New("Config file 'tablarian.config' already exists.")
+		return errors.New("Config file '" + DefaultConfigFileName + "' already exists.")
 	}
 
 	f, err := os.Create(path)

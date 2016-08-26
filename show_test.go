@@ -207,7 +207,7 @@ func TestCmdShowWithPrettyOption(t *testing.T) {
 }
 
 func initShowOpt() {
-	showOpt.configFile = "tablarian.config"
+	showOpt.configFile = DefaultConfigFileName
 	showOpt.showAll = false
 	showOpt.prettyPrint = false
 }
