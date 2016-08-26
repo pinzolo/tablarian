@@ -68,7 +68,7 @@ var (
 				"comment":       "コメント",
 			},
 			"index": map[string]string{
-				"title":   "インデックス名",
+				"title":   "インデックス",
 				"name":    "名前",
 				"columns": "列",
 				"unique":  "ユニーク",
