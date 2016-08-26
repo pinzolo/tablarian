@@ -67,7 +67,7 @@ func TestCmdInitOnConfigFileAlreadyExists(t *testing.T) {
 	if stat == 0 {
 		t.Error("Init command should not finish normally when config file already exists.")
 	}
-	if actual, expected := strings.TrimSpace(buf.String()), "Config file 'tablarian.config' already exists."; actual != expected {
+	if actual, expected := strings.TrimSpace(buf.String()), "Config file '.tablarian.config' already exists."; actual != expected {
 		t.Errorf("Error masseage is not expected. actual: %v, expected: %v", actual, expected)
 	}
 }

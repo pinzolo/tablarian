@@ -23,7 +23,7 @@ var (
 
 Options:
     -c CONGIG_FILE, --config CONFIG_FILE
-        use config file instead of default config file(tablarian.config)
+        use config file instead of default config file(.tablarian.config)
         if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -C, --no-comment
@@ -34,8 +34,8 @@ Options:
 )
 
 func init() {
-	cmdIndex.Flag.StringVar(&idxOpt.configFile, "config", "tablarian.config", "Config file path")
-	cmdIndex.Flag.StringVar(&idxOpt.configFile, "c", "tablarian.config", "Config file path")
+	cmdIndex.Flag.StringVar(&idxOpt.configFile, "config", DefaultConfigFileName, "Config file path")
+	cmdIndex.Flag.StringVar(&idxOpt.configFile, "c", DefaultConfigFileName, "Config file path")
 	cmdIndex.Flag.BoolVar(&idxOpt.withoutTableComment, "no-comment", false, "Without table comment")
 	cmdIndex.Flag.BoolVar(&idxOpt.withoutTableComment, "C", false, "Without table comment")
 }

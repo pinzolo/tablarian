@@ -23,7 +23,7 @@ var (
 
 Options:
     -c CONGIG_FILE, --config CONFIG_FILE
-        use config file instead of default config file(tablarian.config)
+        use config file instead of default config file(.tablarian.config)
         if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -p, --pretty
@@ -47,8 +47,8 @@ Options:
 )
 
 func init() {
-	cmdPublish.Flag.StringVar(&publishOpt.configFile, "config", "tablarian.config", "Config file path")
-	cmdPublish.Flag.StringVar(&publishOpt.configFile, "c", "tablarian.config", "Config file path")
+	cmdPublish.Flag.StringVar(&publishOpt.configFile, "config", DefaultConfigFileName, "Config file path")
+	cmdPublish.Flag.StringVar(&publishOpt.configFile, "c", DefaultConfigFileName, "Config file path")
 	cmdPublish.Flag.BoolVar(&publishOpt.prettyPrint, "pretty", false, "Pretty print")
 	cmdPublish.Flag.BoolVar(&publishOpt.prettyPrint, "p", false, "Pretty print")
 	cmdPublish.Flag.StringVar(&publishOpt.format, "format", "markdown", "File format")

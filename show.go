@@ -21,7 +21,7 @@ var (
 
 Options:
     -c CONGIG_FILE, --config CONFIG_FILE
-        use config file instead of default config file(tablarian.config)
+        use config file instead of default config file(.tablarian.config)
         if CONFIG_FILE starts with '@', it is treated as absolute file path.
 
     -a, --all
@@ -37,8 +37,8 @@ Options:
 )
 
 func init() {
-	cmdShow.Flag.StringVar(&showOpt.configFile, "config", "tablarian.config", "Config file path")
-	cmdShow.Flag.StringVar(&showOpt.configFile, "c", "tablarian.config", "Config file path")
+	cmdShow.Flag.StringVar(&showOpt.configFile, "config", DefaultConfigFileName, "Config file path")
+	cmdShow.Flag.StringVar(&showOpt.configFile, "c", DefaultConfigFileName, "Config file path")
 	cmdShow.Flag.BoolVar(&showOpt.showAll, "all", false, "Show all metadata of table")
 	cmdShow.Flag.BoolVar(&showOpt.showAll, "a", false, "Show all metadata of table")
 	cmdShow.Flag.BoolVar(&showOpt.prettyPrint, "pretty", false, "Pretty print")

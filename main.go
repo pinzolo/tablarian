@@ -13,6 +13,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// DefaultConfigFileName is default using config file name without option.
+const DefaultConfigFileName = ".tablarian.config"
+
 // A Command is an implementation of a tablarian command
 type Command struct {
 	// Run runs the command.

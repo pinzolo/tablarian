@@ -10,11 +10,11 @@ import (
 
 func TestLoadDefaultConfig(t *testing.T) {
 	setupTestConfigFile("tablarian-test")
-	cfg, err := loadConfig("tablarian.config")
+	cfg, err := loadConfig(DefaultConfigFileName)
 	if err != nil {
 		t.Errorf("Failure config loading: %v", err)
 	}
-	if !strings.HasSuffix(cfg.FilePath, "tablarian.config") {
+	if !strings.HasSuffix(cfg.FilePath, DefaultConfigFileName) {
 		t.Errorf("Load invalid config file. path: %s", cfg.FilePath)
 	}
 	if cfg.Driver != "postgres" {
@@ -97,7 +97,7 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failure config loading: %v", err)
 	}
-	if !strings.HasSuffix(cfg.FilePath, "tablarian.config") {
+	if !strings.HasSuffix(cfg.FilePath, DefaultConfigFileName) {
 		t.Errorf("Load invalid config file. path: %s", cfg.FilePath)
 	}
 	if cfg.Driver != "postgres" {
@@ -134,7 +134,7 @@ func TestLoadConfigWithAbsPath(t *testing.T) {
 
 func TestLoadConfigWithInvalidJson(t *testing.T) {
 	setupTestConfigFile("invalid-json")
-	_, err := loadConfig("tablarian.config")
+	_, err := loadConfig(DefaultConfigFileName)
 	if err == nil {
 		t.Error("Config loading should fail on invalid json.")
 	}
@@ -142,7 +142,7 @@ func TestLoadConfigWithInvalidJson(t *testing.T) {
 
 func TestLoadConfigWithConfigFileNotFound(t *testing.T) {
 	deleteTestConfigFile()
-	_, err := loadConfig("tablarian.config")
+	_, err := loadConfig(DefaultConfigFileName)
 	if err == nil {
 		t.Error("Config loading should fail on config file not exists.")
 	}
@@ -160,7 +160,7 @@ func setupTestConfigFile(fileName string) error {
 	}
 	defer src.Close()
 
-	dest, err := os.Create(filepath.Join(wd, "tablarian.config"))
+	dest, err := os.Create(filepath.Join(wd, DefaultConfigFileName))
 	if err != nil {
 		return err
 	}
@@ -185,5 +185,5 @@ func testConfigFilePath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(wd, "tablarian.config"), nil
+	return filepath.Join(wd, DefaultConfigFileName), nil
 }
