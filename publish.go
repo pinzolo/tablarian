@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/pinzolo/dbmodel"
 )
 
 type publishOption struct {
 	baseOption
-	format string
-	locale string
+	format  string
+	locale  string
+	verbose bool
 }
 
 var (
@@ -36,6 +38,9 @@ Options:
     -l LOCALE, --locale LOCALE
         use LOCALE instead of default locale(en).
         currently acceptable locales are 'en', 'ja'.
+
+    -v, --verbose
+        print verbose log to console.
 	`,
 	}
 	publishOpt = publishOption{}
@@ -50,6 +55,8 @@ func init() {
 	cmdPublish.Flag.StringVar(&publishOpt.format, "f", "markdown", "File format")
 	cmdPublish.Flag.StringVar(&publishOpt.locale, "locale", "en", "Locale")
 	cmdPublish.Flag.StringVar(&publishOpt.locale, "l", "en", "Locale")
+	cmdPublish.Flag.BoolVar(&publishOpt.verbose, "v", false, "Print log")
+	cmdPublish.Flag.BoolVar(&publishOpt.verbose, "verbose", false, "Print log")
 }
 
 // runPublish executes out command and return exit code.
@@ -70,13 +77,18 @@ func runPublish(args []string) int {
 		return 1
 	}
 	conv := findConverter(publishOpt.prettyPrint, cfg.Driver)
-	pub, err := findPublisher(publishOpt.format, cfg, conv, l(publishOpt.locale))
+	var logger io.Writer
+	if publishOpt.verbose {
+		logger = o.out
+	}
+	pub, err := findPublisher(publishOpt.format, cfg, conv, l(publishOpt.locale), logger)
 	if err != nil {
 		fmt.Fprintln(o.err, err)
 		return 1
 	}
 	pub.Publish(tables)
 	if len(pub.Errors()) > 0 {
+		fmt.Fprintln(o.err, "Error occured!! ==========")
 		for _, err = range pub.Errors() {
 			fmt.Fprintln(o.err, err)
 		}

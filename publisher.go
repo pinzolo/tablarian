@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/pinzolo/dbmodel"
 )
@@ -12,9 +13,9 @@ type Publisher interface {
 	Errors() []error
 }
 
-func findPublisher(format string, config *Config, converter Converter, locale locale) (Publisher, error) {
+func findPublisher(format string, config *Config, converter Converter, locale locale, logger io.Writer) (Publisher, error) {
 	if format == "markdown" {
-		return newMarkdownPublisher(config, converter, locale), nil
+		return newMarkdownPublisher(config, converter, locale, logger), nil
 	}
 
 	return nil, fmt.Errorf("Format '%s' is invalid format.", format)
